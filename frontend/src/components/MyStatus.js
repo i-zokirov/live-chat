@@ -26,11 +26,11 @@ const MyStatus = ({ status, setStatus }) => {
         <Box
             sx={{
                 display: "flex",
-                justifyContent: "space-between",
+                justifyContent: "flex-end",
                 alignItems: "center",
                 height: "10vh",
                 marginRight: "10px",
-                marginLeft: "10px",
+                borderBottom: "0.5px solid #bdbdbd",
             }}
         >
             <Select

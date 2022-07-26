@@ -1,12 +1,13 @@
 import React, { createContext, useState, useMemo, useEffect } from "react";
-import {
-    createTheme,
-    ThemeProvider,
-    CssBaseline,
-
-} from "@mui/material";
+import { createTheme, ThemeProvider, CssBaseline } from "@mui/material";
 import "./App.css";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+    BrowserRouter,
+    Routes,
+    Route,
+    Navigate,
+    useNavigate,
+} from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
@@ -45,7 +46,7 @@ export const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
 const App = () => {
     const [mode, setMode] = useState(localStorage.getItem("mode") || "dark");
-    const [authenticated, setAuthenticated] = useState(false);
+
     const colorMode = useMemo(
         () => ({
             toggleColorMode: () => {
@@ -64,10 +65,9 @@ const App = () => {
 
     const { tokenVerified, data } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
+
     useEffect(() => {
-        if (data && tokenVerified) {
-            setAuthenticated(true);
-        } else if (data && !tokenVerified) {
+        if (data && !tokenVerified) {
             dispatch(verifyToken());
         }
     }, [tokenVerified, data, dispatch]);
@@ -87,7 +87,7 @@ const App = () => {
                             element={
                                 <ProtectRoute
                                     redirectPath="/signin"
-                                    authenticated={authenticated}
+                                    authenticated={tokenVerified}
                                 >
                                     <Home />
                                 </ProtectRoute>
@@ -95,8 +95,16 @@ const App = () => {
                         />
                         <Route
                             path="/choose-avatar"
-                            element={<ChoosAvatar />}
+                            element={
+                                <ProtectRoute
+                                    redirectPath="/signin"
+                                    authenticated={tokenVerified}
+                                >
+                                    <ChoosAvatar />
+                                </ProtectRoute>
+                            }
                         />
+
                         <Route path="*" element={<Navigate to="/chats" />} />
                     </Routes>
                 </BrowserRouter>

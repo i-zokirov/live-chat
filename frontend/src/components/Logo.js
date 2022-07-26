@@ -1,5 +1,6 @@
 import React from "react";
 import { Box } from "@mui/material";
+import { BiMessageDots } from "react-icons/bi";
 const Logo = () => {
     return (
         <Box
@@ -8,9 +9,16 @@ const Logo = () => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
+                marginTop: "20px",
             }}
         >
-            Logo
+            <BiMessageDots
+                style={{
+                    width: "40px",
+                    height: "40px",
+                    color: "#f50057",
+                }}
+            />
         </Box>
     );
 };

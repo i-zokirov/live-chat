@@ -11,7 +11,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import React, { useState, useEffect } from "react";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { Link as Router, useNavigate } from "react-router-dom";
+import { Link as Router, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { authenticateUser } from "../redux/actions/actions";
 const Login = () => {
@@ -33,6 +33,8 @@ const Login = () => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
+ 
     const { loading, error, data } = useSelector((state) => state.auth);
 
     const handleLogin = (e) => {
@@ -44,25 +46,28 @@ const Login = () => {
     useEffect(() => {
         if (data && !data.avatar) {
             navigate("/choose-avatar");
-        } else if (data){
-             navigate("/chats");
+        } else if (data) {
+            navigate(location.state.prevPath || "/chats");
         }
     }, [data, navigate]);
 
     return (
         <Box
             sx={{
-                marginTop: 8,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
+                justifyContent: "center",
+                height: "100vh",
+                background:
+                    "linear-gradient(to left bottom, #3f51b5, #8644b0, #ba2c9d, #df007e, #f50057)",
             }}
         >
             <Paper
                 elevation={2}
                 sx={{
-                    minHeight: 300,
-                    minWidth: 400,
+                    minHeight: 400,
+                    minWidth: 350,
                     display: "flex",
                     justifyContent: "center",
                     padding: 5,
@@ -100,7 +105,7 @@ const Login = () => {
                             alignItems: "center",
                         }}
                     >
-                        <Box sx={{ margin: "5px" }}>
+                        <Box sx={{ margin: "10px" }}>
                             <TextField
                                 label="Email"
                                 variant="outlined"
@@ -112,7 +117,7 @@ const Login = () => {
                                 required
                             />
                         </Box>
-                        <Box sx={{ margin: "5px" }}>
+                        <Box sx={{ margin: "10px" }}>
                             <TextField
                                 label="Password"
                                 variant="outlined"

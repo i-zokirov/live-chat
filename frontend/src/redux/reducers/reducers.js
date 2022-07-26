@@ -13,6 +13,7 @@ import {
     UPDATE_USER_REQUEST,
     UPDATE_USER_SUCCESS,
     USER_LOGOUT,
+    UPDATE_USER_RESET,
 } from "../constants/constants";
 
 export const messagesReducer = (state = {}, action) => {
@@ -76,7 +77,11 @@ export const authUserReducer = (state = {}, action) => {
                 tokenVerified: false,
             };
         case USER_LOGOUT:
-            return {};
+            return {
+                loading: false,
+                data: null,
+                tokenVerified: false,
+            };
         default:
             return state;
     }
@@ -119,6 +124,8 @@ export const updateUserReducer = (state = {}, action) => {
                 loading: false,
                 error: action.payload,
             };
+        case UPDATE_USER_RESET:
+            return {};
         default:
             return state;
     }

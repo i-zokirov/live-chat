@@ -53,17 +53,20 @@ const Register = () => {
     return (
         <Box
             sx={{
-                marginTop: 8,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
+                height: "100vh",
+                justifyContent: "center",
+                background:
+                    "linear-gradient(to left bottom, #3f51b5, #8644b0, #ba2c9d, #df007e, #f50057)",
             }}
         >
             <Paper
                 elevation={2}
                 sx={{
-                    minHeight: 300,
-                    minWidth: 400,
+                    minHeight: 400,
+                    minWidth: 350,
                     display: "flex",
                     justifyContent: "center",
                     padding: 5,
@@ -102,7 +105,7 @@ const Register = () => {
                             alignItems: "center",
                         }}
                     >
-                        <Box sx={{ margin: "5px" }}>
+                        <Box sx={{ margin: "10px" }}>
                             <TextField
                                 label="Name"
                                 variant="outlined"
@@ -114,7 +117,7 @@ const Register = () => {
                                 required
                             />
                         </Box>
-                        <Box sx={{ margin: "5px" }}>
+                        <Box sx={{ margin: "10px" }}>
                             <TextField
                                 label="Email"
                                 variant="outlined"
@@ -125,7 +128,7 @@ const Register = () => {
                                 required
                             />
                         </Box>
-                        <Box sx={{ margin: "5px" }}>
+                        <Box sx={{ margin: "10px" }}>
                             <TextField
                                 label="Password"
                                 variant="outlined"

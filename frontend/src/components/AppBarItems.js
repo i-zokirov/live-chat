@@ -1,9 +1,10 @@
 import React from "react";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import ForumIcon from "@mui/icons-material/Forum";
-import MarkEmailUnreadIcon from "@mui/icons-material/MarkEmailUnread";
+import GroupIcon from "@mui/icons-material/Group";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import LogoutIcon from "@mui/icons-material/Logout";
+import ToggleColorMode from "./ToggleDarkMode";
 const AppBarItems = ({
     handleAppBarClick,
     handleLogout,
@@ -18,14 +19,14 @@ const AppBarItems = ({
             action: handleAppBarClick,
         },
         {
-            title: "Messages",
-            name: "Messages",
-            icon: <MarkEmailUnreadIcon />,
+            title: "Groups",
+            name: "Groups",
+            icon: <GroupIcon />,
             action: handleAppBarClick,
         },
         {
-            title: "Archive",
-            name: "Archive",
+            title: "Archived Chats",
+            name: "Archived Chats",
             icon: <ArchiveIcon />,
             action: handleAppBarClick,
         },
@@ -69,6 +70,8 @@ const AppBarItems = ({
                     </Tooltip>
                 </IconButton>
             ))}
+
+            <ToggleColorMode />
         </Box>
     );
 };

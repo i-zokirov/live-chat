@@ -48,6 +48,7 @@ export const authenticate = expressAsyncHandler(async (req, res) => {
                 name: user.name,
                 email: user.email,
                 token: generateToken(user._id),
+                avatar: user.avatar,
             });
         } else {
             res.status(401);

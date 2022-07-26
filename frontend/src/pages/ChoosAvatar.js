@@ -8,9 +8,11 @@ import {
     CardActionArea,
     Alert,
     AlertTitle,
+    Button,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { useTheme } from "@mui/material/styles";
 import { useDispatch, useSelector } from "react-redux";
 import images from "../utils/images";
@@ -32,6 +34,10 @@ const ChoosAvatar = () => {
         }
     };
 
+    const goBack = () => {
+        navigate(-1);
+    };
+
     useEffect(() => {
         if (error) {
             setAlert({ title: "Error", severity: "error", message: error });
@@ -48,7 +54,7 @@ const ChoosAvatar = () => {
             setTimeout(() => {
                 setAlert(null);
                 navigate("/chats");
-            }, 3000);
+            }, 1000);
         }
     }, [error, data, navigate]);
 
@@ -61,13 +67,13 @@ const ChoosAvatar = () => {
                 sx={{
                     display: "flex",
                     justifyContent: "center",
-                    marginBottom: "40px",
+                    margin: "20px",
                 }}
             >
-                <Typography variant="h6">Choose your avatar:</Typography>
+                <Typography variant="h6" sx={{fontWeight: 600}}>Choose your avatar:</Typography>
             </Box>
             {alert && (
-                <Alert severity={alert.severity}>
+                <Alert variant="filled" severity={alert.severity}>
                     {" "}
                     <AlertTitle>{alert.title}</AlertTitle>
                     {alert.message}
@@ -112,7 +118,8 @@ const ChoosAvatar = () => {
                 sx={{
                     display: "flex",
                     justifyContent: "center",
-                    marginTop: "40px",
+                    flexDirection: "column",
+                    alignItems: "center",
                 }}
             >
                 <LoadingButton
@@ -124,8 +131,20 @@ const ChoosAvatar = () => {
                     startIcon={<CheckCircleIcon />}
                     onSubmit={updateUserAvatar}
                     onClick={updateUserAvatar}
+                    sx={{ margin: "10px" }}
                 >
                     Continue
+                </LoadingButton>
+                <LoadingButton
+                    color="primary"
+                    type="submit"
+                    loadingPosition="start"
+                    variant="contained"
+                    startIcon={<ChevronLeftIcon />}
+                    onClick={goBack}
+                    sx={{ margin: "10px" }}
+                >
+                    Go Back
                 </LoadingButton>
             </Box>
         </Container>

@@ -5,11 +5,11 @@ import { Grid, Box } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import LogoutIcon from "@mui/icons-material/Logout";
-
+import FaceIcon from "@mui/icons-material/Face";
 // CUSTOM COMPONENTS
 import Header from "../components/Header";
-import Dashboard from "../components/Dashboard";
 import Chats from "../components/Chats";
+import ChatProfile from "../components/ChatProfile";
 import User from "../components/User";
 import AppBarItems from "../components/AppBarItems";
 import ChatWindow from "../components/ChatWindow";
@@ -22,8 +22,9 @@ import socket from "../socket";
 
 // Redux stuff
 import { ADD_MESSAGE } from "../redux/constants/constants";
-import { getContacts } from "../redux/actions/actions";
+import { getContacts, logoutUser } from "../redux/actions/actions";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
     const [message, setMessage] = useState("");
@@ -39,6 +40,7 @@ const Home = () => {
     const openProfileMenu = Boolean(profileAnchor);
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const theme = useTheme();
     const { tokenVerified, data: currentUserData } = useSelector(
         (state) => state.auth
@@ -145,7 +147,7 @@ const Home = () => {
 
     // function to logout
     const handleLogout = () => {
-        console.log("Logout");
+        dispatch(logoutUser());
         if (profileAnchor) {
             setProfileAnchor(null);
         }
@@ -178,7 +180,16 @@ const Home = () => {
         setCurrentWindow(e.currentTarget.name);
     };
 
+    const redirectToAvatarPage = () => {
+        navigate("/choose-avatar");
+    };
+
     const profileMenuItems = [
+        {
+            label: "Set Avatar",
+            icon: <FaceIcon />,
+            action: redirectToAvatarPage,
+        },
         {
             label: "Edit Profile",
             action: editProfile,
@@ -263,10 +274,9 @@ const Home = () => {
                 </Grid>
 
                 <Grid item xs={2.5}>
-                    <Box sx={{ borderBottom: "0.5px solid #bdbdbd" }}>
-                        <MyStatus status={status} setStatus={setStatus} />
-                    </Box>
-                    <Dashboard />
+                    <MyStatus status={status} setStatus={setStatus} />
+
+                    {currentChat && <ChatProfile currentChat={currentChat} />}
                 </Grid>
             </Grid>
             <ActionMenu

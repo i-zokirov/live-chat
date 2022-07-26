@@ -12,6 +12,7 @@ import {
     GET_USER_CONTACTS_REQUEST,
     GET_USER_CONTACTS_SUCCESS,
     USER_LOGOUT,
+    UPDATE_USER_RESET,
 } from "../constants/constants";
 import axios from "axios";
 import baseUrl from "../../baseUrl";
@@ -67,6 +68,7 @@ export const logoutUser = () => {
     return (dispatch) => {
         localStorage.removeItem("userData");
         dispatch({ type: USER_LOGOUT });
+        dispatch({ type: "RESET_APP" });
     };
 };
 
@@ -169,6 +171,9 @@ export const updateUser = (reqbody) => {
                     avatar: data.avatar,
                 })
             );
+            setTimeout(() => {
+                dispatch({ type: UPDATE_USER_RESET });
+            }, 5000);
         } catch (error) {
             const err =
                 error.response && error.response.data.message
@@ -178,6 +183,9 @@ export const updateUser = (reqbody) => {
                 dispatch(logoutUser());
             }
             dispatch({ type: UPDATE_USER_FAILURE, payload: err });
+            setTimeout(() => {
+                dispatch({ type: UPDATE_USER_RESET });
+            }, 5000);
         }
     };
 };
