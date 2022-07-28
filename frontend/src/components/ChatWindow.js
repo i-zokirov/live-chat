@@ -3,11 +3,9 @@ import {
     Avatar,
     IconButton,
     Tooltip,
-
     Typography,
     Paper,
     TextField,
-
     Button,
 } from "@mui/material";
 import React, { useState, useRef, useEffect } from "react";
@@ -104,7 +102,6 @@ const ChatWindow = ({
     };
 
     const mainWindowClick = (e) => {
-        console.log(e.target);
         if (showEmoji) {
             setShowEmoji(false);
         }
@@ -222,14 +219,17 @@ const ChatWindow = ({
                 <div ref={bottomRef} />
             </Box>
 
-            <Box sx={{ height: "8vh" }} onClick={mainWindowClick}>
-                <Paper
-                    elevation={0}
+            <Box
+                sx={{ height: "12.7vh", borderBottom: "0.5px solid #bdbdbd" }}
+                onClick={mainWindowClick}
+            >
+                <Box
                     sx={{
-                        padding: "20px",
+                        padding: "15px",
                         display: "flex",
                         justifyContent: "space-evenly",
                         bgColor: theme.palette.grey[500],
+                        // borderBottom: "0.5px solid #bdbdbd",
                     }}
                 >
                     <IconButton sx={{ width: 60, height: 60 }}>
@@ -279,7 +279,7 @@ const ChatWindow = ({
                     >
                         <SendIcon sx={{ color: "secondary.main" }} />
                     </IconButton>
-                </Paper>
+                </Box>
             </Box>
 
             {showEmoji && (

@@ -13,8 +13,8 @@ const Chats = ({
             sx={{
                 overflow: "scroll",
                 overflowX: "hidden",
-                minHeight: "75vh",
-                maxHeight: "75vh",
+                minHeight: "78vh",
+                maxHeight: "78vh",
                 borderBottom: "0.5px solid #bdbdbd",
             }}
             className="scrollbar"

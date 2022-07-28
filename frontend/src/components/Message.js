@@ -7,7 +7,7 @@ const Message = ({ message, theme }) => {
             sx={{
                 display: "flex",
                 justifyContent:
-                    message.type === "sender" ? "flex-end" : "flex-start",
+                    message.party === "sender" ? "flex-end" : "flex-start",
                 margin: "20px",
             }}
         >
@@ -18,16 +18,16 @@ const Message = ({ message, theme }) => {
                     flexDirection: "column",
                     minWidth: "30px",
                     padding: "5px 10px 0px 10px",
-                    color: message.type === "sender" ? "black" : "white",
+                    color: message.party === "sender" ? "black" : "white",
                     bgcolor:
-                        message.type === "sender"
+                        message.party === "sender"
                             ? theme.palette.grey[300]
                             : "#2196f3",
                     overflowWrap: "break-word",
                     maxWidth: "40%",
                 }}
                 style={
-                    message.type === "sender"
+                    message.party === "sender"
                         ? {
                               borderTopLeftRadius: "10px",
                               borderBottomLeftRadius: "10px",
@@ -42,12 +42,14 @@ const Message = ({ message, theme }) => {
                           }
                 }
             >
-                <Typography variant="body1">{message.text}</Typography>
+                {message.type === "Text" && (
+                    <Typography variant="body1">{message.message}</Typography>
+                )}
                 <Box
                     sx={{
                         display: "flex",
                         justifyContent:
-                            message.type === "sender"
+                            message.party === "sender"
                                 ? "flex-end"
                                 : "flex-start",
                     }}
@@ -55,7 +57,7 @@ const Message = ({ message, theme }) => {
                     <Typography
                         variant="caption"
                         color={
-                            message.type === "sender"
+                            message.party === "sender"
                                 ? theme.palette.grey[500]
                                 : "white"
                         }

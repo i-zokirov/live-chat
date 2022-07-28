@@ -19,11 +19,12 @@ const ChatProfile = ({ currentChat }) => {
         <Box
             sx={{
                 display: "flex",
-                justifyContent: "center",
+                justifyContent: "flex-start",
                 flexDirection: "column",
                 alignItems: "center",
                 marginTop: "60px",
-                height: "20vh",
+                height: "81.3vh",
+                borderBottom: "0.5px solid #bdbdbd",
             }}
         >
             {currentChat.avatar ? (

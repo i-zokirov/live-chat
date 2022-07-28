@@ -31,9 +31,7 @@ const Home = () => {
     const [showEmoji, setShowEmoji] = useState(false);
     const [status, setStatus] = useState("Offline");
 
-    const [currentChat, setCurrentChat] = useState(
-        JSON.parse(localStorage.getItem("currentChat")) || null
-    );
+    const [currentChat, setCurrentChat] = useState(null);
     const [profileAnchor, setProfileAnchor] = useState(null);
     const [openEditProfile, setOpenEditProfile] = useState(false);
     const [currentWindow, setCurrentWindow] = useState("Chats");
@@ -63,8 +61,10 @@ const Home = () => {
     }, []);
 
     let lastmessageId = null;
+
     useEffect(() => {
-        socket.on("receive-message", (data) => {
+        socket.on("message:created", (data) => {
+            console.log(data);
             if (
                 data.senderSocketId !== socket.id &&
                 lastmessageId !== data.messageId
@@ -73,8 +73,9 @@ const Home = () => {
                     type: ADD_MESSAGE,
                     payload: {
                         messageData: {
-                            text: data.message,
-                            type: "receiver",
+                            type: data.type,
+                            message: data.message,
+                            party: "recipient",
                             senderName: data.senderName,
                             date: data.date,
                         },
@@ -102,28 +103,38 @@ const Home = () => {
 
     // sends message and dispatchs it for corresponding window
     const handleSendMessage = () => {
-        const newmessage = {
-            chatId: currentChat._id,
-            messageData: {
-                text: message,
-                type: "sender",
+        socket.emit(
+            "message:create",
+            {
+                to: currentChat._id,
+                from: currentUserData._id,
                 senderName: currentUserData.name,
+                message,
+                type: "Text",
+                senderSocketId: socket.id,
                 date: new Date(),
             },
-        };
-        dispatch({
-            type: ADD_MESSAGE,
-            payload: newmessage,
-        });
-
-        socket.emit("send-message", {
-            to: currentChat._id,
-            from: currentUserData._id,
-            senderName: currentUserData.name,
-            message,
-            senderId: socket.id,
-            date: new Date(),
-        });
+            (res) => {
+                if ("error" in res) {
+                    console.log(res);
+                } else {
+                    const newmessage = {
+                        chatId: currentChat._id,
+                        messageData: {
+                            type: "Text",
+                            message: message,
+                            party: "sender",
+                            senderName: currentUserData.name,
+                            date: new Date(),
+                        },
+                    };
+                    dispatch({
+                        type: ADD_MESSAGE,
+                        payload: newmessage,
+                    });
+                }
+            }
+        );
         setMessage("");
     };
 

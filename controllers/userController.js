@@ -35,7 +35,7 @@ export const registerUser = expressAsyncHandler(async (req, res) => {
     }
 });
 
-// @desc:   register user
+// @desc:   authenticate user
 // @route:  POST /api/users/signin
 // @access: Public
 export const authenticate = expressAsyncHandler(async (req, res) => {
@@ -60,7 +60,7 @@ export const authenticate = expressAsyncHandler(async (req, res) => {
     }
 });
 
-// @desc:   register user
+// @desc:   verify user token user
 // @route:  GET /api/users/token
 // @access: Public
 export const verifyToken = (req, res) => {
@@ -93,7 +93,46 @@ export const verifyToken = (req, res) => {
     }
 };
 
-// @desc:   register user
+// @desc:   get user DMs
+// @route:  GET /api/users/:userId/dms
+// @access: Private
+export const getDMs = expressAsyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.userId).populate(
+        "dms",
+        "name email avatar"
+    );
+    res.json(user.dms);
+});
+
+// @desc:   add DM
+// @route:  put /api/users/:userId/dms/:dmId
+// @access: Private
+export const addDM = expressAsyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.userId).populate(
+        "dms",
+        "name email avatar"
+    );
+
+    const dm = await User.findById(req.params.dmId).populate(
+        "dms",
+        "name email avatar"
+    );
+
+    if (dm && user) {
+        if (!user.dms.some((x) => x._id.toString === dm._id.toString())) {
+            user.dms.push(dm._id);
+            await user.save();
+        }
+        if (!dm.dms.some((x) => x._id.toString === user._id.toString())) {
+            dm.dms.push(dm._id);
+            await dm.save();
+        }
+    }
+
+    res.json({ message: "Success" });
+});
+
+// @desc:   Get all users except current user
 // @route:  GET /api/users/contacts
 // @access: Private
 export const getContacts = expressAsyncHandler(async (req, res) => {

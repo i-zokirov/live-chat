@@ -6,8 +6,10 @@ import { v4 as uuidv4 } from "uuid";
 import connectDB from "./config/connectMongoDB.js";
 import { notFound, errorHandler } from "./middleware/errorHandlers.js";
 import userRoutes from "./routers/userRoutes.js";
+import messageRoutes from "./routers/messageRoutes.js";
 
 import dotenv from "dotenv";
+import { handleMessage } from "./controllers/socket/messageController.js";
 
 dotenv.config();
 
@@ -26,25 +28,15 @@ global.onlineUsers = new Map();
 io.on("connection", (socket) => {
     global.chatSocket = socket;
     socket.on("add-user", (userId) => {
+        console.log(userId);
         onlineUsers.set(userId, socket.id);
     });
-    socket.on("send-message", (data) => {
-        const receiver = onlineUsers.get(data.to);
-        if (receiver) {
-            socket.to(receiver).emit("receive-message", {
-                message: data.message,
-                senderSocketId: socket.id,
-                messageId: uuidv4(),
-                senderName: data.senderName,
-                date: data.date,
-                chatId: data.from,
-            });
-        }
-    });
+    socket.on("message:create", handleMessage);
 });
 
 // ROUTE HANDLERS
 app.use("/api/users", userRoutes);
+app.use("/api/messages", messageRoutes);
 
 // ERROR HANDLERS
 app.use(notFound);
