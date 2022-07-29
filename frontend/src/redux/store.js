@@ -5,6 +5,8 @@ import {
     addChatReducer,
     allUsersReducer,
     authUserReducer,
+    loadedChatsReducer,
+    loadMessagesReducer,
     messagesReducer,
     updateUserReducer,
     userContactsReducer,
@@ -22,6 +24,8 @@ const allReducers = combineReducers({
     updateUser: updateUserReducer,
     allusers: allUsersReducer,
     addChat: addChatReducer,
+    loadMessages: loadMessagesReducer,
+    loadedChats: loadedChatsReducer,
 });
 
 const rootReducer = (state, action) => {

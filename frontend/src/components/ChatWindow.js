@@ -25,6 +25,7 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import ImageIcon from "@mui/icons-material/Image";
 import ActionMenu from "./ActionMenu";
 import BlockIcon from "@mui/icons-material/Block";
+import LinearProgress from "@mui/material/LinearProgress";
 import Message from "./Message";
 function stringAvatar(name) {
     return {
@@ -93,7 +94,9 @@ const ChatWindow = ({
     ];
     const theme = useTheme();
     const messagesRepo = useSelector((state) => state.messages);
-
+    const { loading: messagesLoading } = useSelector(
+        (state) => state.loadMessages
+    );
     const handleKeyDown = (e) => {
         if (e.keyCode === 13) {
             e.preventDefault();
@@ -109,7 +112,7 @@ const ChatWindow = ({
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messagesRepo]);
+    }, [messagesRepo, currentChat]);
 
     const inputIconColor =
         theme.palette.mode === "dark"
@@ -189,6 +192,7 @@ const ChatWindow = ({
                     </Button>
                 </Box>
             </Box>
+            {messagesLoading && <LinearProgress color="secondary" />}
 
             <Box
                 sx={{

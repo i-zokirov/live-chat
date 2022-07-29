@@ -46,7 +46,7 @@ const Login = () => {
     };
 
     useEffect(() => {
-        if (data && tokenVerified) {
+        if (data) {
             navigate(location.state ? location.state.prevPath : "/chats");
         }
     }, [data]);

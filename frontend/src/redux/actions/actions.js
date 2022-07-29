@@ -14,12 +14,16 @@ import {
     GET_ALL_USERS_FAILURE,
     GET_ALL_USERS_REQUEST,
     GET_ALL_USERS_SUCCESS,
+    LOAD_MESSAGES_FAILURE,
+    LOAD_MESSAGES_REQUEST,
+    LOAD_MESSAGES_SUCCESS,
     ADD_CHAT_FAILURE,
     ADD_CHAT_REQUEST,
     ADD_CHAT_SUCCESS,
     ADD_CHAT_RESET,
     USER_LOGOUT,
     UPDATE_USER_RESET,
+    LOADED_CHATS,
 } from "../constants/constants";
 import axios from "axios";
 import baseUrl from "../../baseUrl";
@@ -169,6 +173,46 @@ export const getAllUsers = () => {
                 dispatch(logoutUser());
             }
             dispatch({ type: GET_ALL_USERS_FAILURE, payload: err });
+        }
+    };
+};
+
+export const loadMessages = (chatId) => {
+    return async (dispatch, getState) => {
+        try {
+            dispatch({ type: LOAD_MESSAGES_REQUEST });
+            const {
+                auth: { data: userData },
+            } = getState();
+
+            console.log("loading");
+
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${userData.token}`,
+                },
+            };
+            const { data } = await axios.get(
+                `${baseUrl}/api/messages?receiver=${chatId}`,
+                config
+            );
+            dispatch({
+                type: LOAD_MESSAGES_SUCCESS,
+                payload: data,
+            });
+            dispatch({
+                type: LOADED_CHATS,
+                payload: chatId,
+            });
+        } catch (error) {
+            const err =
+                error.response && error.response.data.message
+                    ? error.response.data.message
+                    : error.message;
+            if (err === "jwt expired") {
+                dispatch(logoutUser());
+            }
+            dispatch({ type: LOAD_MESSAGES_FAILURE, payload: err });
         }
     };
 };

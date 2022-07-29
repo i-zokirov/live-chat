@@ -18,9 +18,14 @@ import {
     UPDATE_USER_FAILURE,
     UPDATE_USER_REQUEST,
     UPDATE_USER_SUCCESS,
+    LOAD_MESSAGES_FAILURE,
+    LOAD_MESSAGES_REQUEST,
+    LOAD_MESSAGES_SUCCESS,
+    LOAD_MESSAGES_RESET,
     USER_LOGOUT,
     UPDATE_USER_RESET,
     ADD_CHAT_RESET,
+    LOADED_CHATS,
 } from "../constants/constants";
 
 export const messagesReducer = (state = {}, action) => {
@@ -31,18 +36,27 @@ export const messagesReducer = (state = {}, action) => {
                 newState = { ...state };
                 newState[action.payload.chatId] = [
                     ...state[action.payload.chatId],
-                    action.payload.messageData,
+                    ...action.payload.messageData,
                 ];
             } else {
                 newState = { ...state };
-                newState[action.payload.chatId] = [action.payload.messageData];
+                newState[action.payload.chatId] = [
+                    ...action.payload.messageData,
+                ];
             }
             return newState;
         default:
             return state;
     }
 };
-
+export const loadedChatsReducer = (state = [], action) => {
+    switch (action.type) {
+        case LOADED_CHATS:
+            return [...state, action.payload];
+        default:
+            return state;
+    }
+};
 export const userRegisterReducer = (state = {}, action) => {
     switch (action.type) {
         case REGISTER_USER_REQUEST:
@@ -176,6 +190,29 @@ export const updateUserReducer = (state = {}, action) => {
                 error: action.payload,
             };
         case UPDATE_USER_RESET:
+            return {};
+        default:
+            return state;
+    }
+};
+
+export const loadMessagesReducer = (state = {}, action) => {
+    switch (action.type) {
+        case LOAD_MESSAGES_REQUEST:
+            return {
+                loading: true,
+            };
+        case LOAD_MESSAGES_SUCCESS:
+            return {
+                loading: false,
+                messages: action.payload,
+            };
+        case LOAD_MESSAGES_FAILURE:
+            return {
+                loading: false,
+                error: action.payload,
+            };
+        case LOAD_MESSAGES_RESET:
             return {};
         default:
             return state;

@@ -21,8 +21,8 @@ import Searchbar from "../components/Searchbar";
 import socket from "../socket";
 
 // Redux stuff
-import { ADD_MESSAGE } from "../redux/constants/constants";
-import { getDMs, logoutUser } from "../redux/actions/actions";
+import { ADD_MESSAGE, LOAD_MESSAGES_RESET } from "../redux/constants/constants";
+import { getDMs, loadMessages, logoutUser } from "../redux/actions/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -35,6 +35,7 @@ const Home = () => {
     const [profileAnchor, setProfileAnchor] = useState(null);
     const [openEditProfile, setOpenEditProfile] = useState(false);
     const [currentWindow, setCurrentWindow] = useState("Chats");
+    const [lastMessageId, setLastMessageId] = useState(null);
     const openProfileMenu = Boolean(profileAnchor);
 
     const dispatch = useDispatch();
@@ -48,6 +49,23 @@ const Home = () => {
     );
 
     const { newChat } = useSelector((state) => state.addChat);
+    const { messages } = useSelector((state) => state.loadMessages);
+    const loadedChats = useSelector((state) => state.loadedChats);
+    useEffect(() => {
+        if (messages && messages.length) {
+            dispatch({
+                type: ADD_MESSAGE,
+                payload: {
+                    chatId: currentChat._id,
+                    messageData: messages,
+                },
+            });
+
+            dispatch({
+                type: LOAD_MESSAGES_RESET,
+            });
+        }
+    }, [messages]);
 
     useEffect(() => {
         if (!contactlist && tokenVerified) {
@@ -55,36 +73,30 @@ const Home = () => {
         }
     }, []);
 
+    let messageId = null;
     useEffect(() => {
         socket.emit("connection", () => {
             console.log("connection");
         });
         socket.emit("add-user", currentUserData._id);
-    }, []);
-
-    let lastmessageId = null;
-
-    useEffect(() => {
         socket.on("message:created", (data) => {
-            console.log(data);
-            if (
-                data.senderSocketId !== socket.id &&
-                lastmessageId !== data.messageId
-            ) {
+            if (messageId !== data.messageId) {
                 dispatch({
                     type: ADD_MESSAGE,
                     payload: {
-                        messageData: {
-                            type: data.type,
-                            message: data.message,
-                            party: "recipient",
-                            senderName: data.senderName,
-                            date: data.date,
-                        },
+                        messageData: [
+                            {
+                                type: data.type,
+                                message: data.message,
+                                party: "recipient",
+                                senderName: data.senderName,
+                                date: data.date,
+                            },
+                        ],
                         chatId: data.chatId,
                     },
                 });
-                lastmessageId = data.messageId;
+                messageId = data.messageId;
             }
         });
     }, []);
@@ -94,6 +106,12 @@ const Home = () => {
             setCurrentChat(newChat);
         }
     }, [newChat]);
+
+    useEffect(() => {
+        if (currentChat && !loadedChats.includes(currentChat._id)) {
+            dispatch(loadMessages(currentChat._id));
+        }
+    }, [currentChat]);
 
     // toggles emoji window card
     const toggleEmoji = () => {
@@ -128,13 +146,15 @@ const Home = () => {
                 } else {
                     const newmessage = {
                         chatId: currentChat._id,
-                        messageData: {
-                            type: "Text",
-                            message: message,
-                            party: "sender",
-                            senderName: currentUserData.name,
-                            date: new Date(),
-                        },
+                        messageData: [
+                            {
+                                type: "Text",
+                                message: message,
+                                party: "sender",
+                                senderName: currentUserData.name,
+                                date: new Date(),
+                            },
+                        ],
                     };
                     dispatch({
                         type: ADD_MESSAGE,

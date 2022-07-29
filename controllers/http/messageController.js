@@ -34,6 +34,7 @@ export const retrieveMessages = expressAsyncHandler(async (req, res) => {
     const constructedMessages = messages.map((message) => {
         return {
             senderName: message.sender.name,
+            message: message.message,
             party:
                 req.user._id.toString() === message.sender._id.toString()
                     ? "sender"
