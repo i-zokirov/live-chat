@@ -22,7 +22,7 @@ import socket from "../socket";
 
 // Redux stuff
 import { ADD_MESSAGE } from "../redux/constants/constants";
-import { getContacts, logoutUser } from "../redux/actions/actions";
+import { getDMs, logoutUser } from "../redux/actions/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -47,9 +47,11 @@ const Home = () => {
         (state) => state.contacts
     );
 
+    const { newChat } = useSelector((state) => state.addChat);
+
     useEffect(() => {
         if (!contactlist && tokenVerified) {
-            dispatch(getContacts());
+            dispatch(getDMs());
         }
     }, []);
 
@@ -86,6 +88,12 @@ const Home = () => {
             }
         });
     }, []);
+
+    useEffect(() => {
+        if (newChat) {
+            setCurrentChat(newChat);
+        }
+    }, [newChat]);
 
     // toggles emoji window card
     const toggleEmoji = () => {

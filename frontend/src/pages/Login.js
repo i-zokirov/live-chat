@@ -34,8 +34,10 @@ const Login = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
- 
-    const { loading, error, data } = useSelector((state) => state.auth);
+
+    const { loading, error, data, tokenVerified } = useSelector(
+        (state) => state.auth
+    );
 
     const handleLogin = (e) => {
         if (email && password) {
@@ -44,12 +46,10 @@ const Login = () => {
     };
 
     useEffect(() => {
-        if (data && !data.avatar) {
-            navigate("/choose-avatar");
-        } else if (data) {
-            navigate(location.state.prevPath || "/chats");
+        if (data && tokenVerified) {
+            navigate(location.state ? location.state.prevPath : "/chats");
         }
-    }, [data, navigate]);
+    }, [data]);
 
     return (
         <Box

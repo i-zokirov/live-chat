@@ -2,7 +2,7 @@ import express from "express";
 import {
     addDM,
     authenticate,
-    getContacts,
+    getAllUsers,
     getDMs,
     registerUser,
     updateAvatar,
@@ -15,7 +15,9 @@ const router = express.Router();
 router.post("/signup", registerUser);
 router.post("/signin", authenticate);
 router.get("/token", verifyToken);
-router.get("/contacts", protect, getContacts);
+
+// protected routs that require user to be signed in
+router.get("/", protect, getAllUsers);
 router.put("/:userId", protect, updateAvatar);
 router.get("/:userId/dms", protect, getDMs);
 router.put("/:userId/dms/:dmId", protect, addDM);

@@ -6,6 +6,12 @@ import {
     GET_USER_CONTACTS_FAILURE,
     GET_USER_CONTACTS_REQUEST,
     GET_USER_CONTACTS_SUCCESS,
+    GET_ALL_USERS_FAILURE,
+    GET_ALL_USERS_REQUEST,
+    GET_ALL_USERS_SUCCESS,
+    ADD_CHAT_FAILURE,
+    ADD_CHAT_REQUEST,
+    ADD_CHAT_SUCCESS,
     AUTHENTICATE_USER_FAILURE,
     AUTHENTICATE_USER_REQUEST,
     AUTHENTICATE_USER_SUCCESS,
@@ -14,6 +20,7 @@ import {
     UPDATE_USER_SUCCESS,
     USER_LOGOUT,
     UPDATE_USER_RESET,
+    ADD_CHAT_RESET,
 } from "../constants/constants";
 
 export const messagesReducer = (state = {}, action) => {
@@ -103,6 +110,50 @@ export const userContactsReducer = (state = {}, action) => {
                 loading: false,
                 error: action.payload,
             };
+        default:
+            return state;
+    }
+};
+
+export const allUsersReducer = (state = {}, action) => {
+    switch (action.type) {
+        case GET_ALL_USERS_REQUEST:
+            return {
+                loading: true,
+            };
+        case GET_ALL_USERS_SUCCESS:
+            return {
+                loading: false,
+                userslist: action.payload,
+            };
+        case GET_ALL_USERS_FAILURE:
+            return {
+                loading: false,
+                error: action.payload,
+            };
+        default:
+            return state;
+    }
+};
+
+export const addChatReducer = (state = {}, action) => {
+    switch (action.type) {
+        case ADD_CHAT_REQUEST:
+            return {
+                loading: true,
+            };
+        case ADD_CHAT_SUCCESS:
+            return {
+                loading: false,
+                newChat: action.payload,
+            };
+        case ADD_CHAT_FAILURE:
+            return {
+                loading: false,
+                error: action.payload,
+            };
+        case ADD_CHAT_RESET:
+            return {};
         default:
             return state;
     }

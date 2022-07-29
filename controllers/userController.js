@@ -119,12 +119,13 @@ export const addDM = expressAsyncHandler(async (req, res) => {
     );
 
     if (dm && user) {
-        if (!user.dms.some((x) => x._id.toString === dm._id.toString())) {
+        if (!user.dms.some((x) => x._id.toString() === dm._id.toString())) {
             user.dms.push(dm._id);
             await user.save();
         }
-        if (!dm.dms.some((x) => x._id.toString === user._id.toString())) {
-            dm.dms.push(dm._id);
+
+        if (!dm.dms.some((x) => x._id.toString() === user._id.toString())) {
+            dm.dms.push(user._id);
             await dm.save();
         }
     }
@@ -133,9 +134,9 @@ export const addDM = expressAsyncHandler(async (req, res) => {
 });
 
 // @desc:   Get all users except current user
-// @route:  GET /api/users/contacts
+// @route:  GET /api/users/
 // @access: Private
-export const getContacts = expressAsyncHandler(async (req, res) => {
+export const getAllUsers = expressAsyncHandler(async (req, res) => {
     const users = await User.find().select("-password");
     const contacts = users.filter(
         (user) => user._id.toString() !== req.user._id.toString()

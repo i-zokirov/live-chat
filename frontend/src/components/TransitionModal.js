@@ -15,7 +15,7 @@ const style = {
     boxShadow: 24,
     p: 4,
 };
-const TransitionModal = ({ open, handleClose, children }) => {
+const TransitionModal = ({ open, customStyle, handleClose, children }) => {
     return (
         <Modal
             aria-labelledby="transition-modal-title"
@@ -29,7 +29,7 @@ const TransitionModal = ({ open, handleClose, children }) => {
             }}
         >
             <Fade in={open}>
-                <Box sx={style}>{children}</Box>
+                <Box sx={{ ...style, ...customStyle }}>{children}</Box>
             </Fade>
         </Modal>
     );

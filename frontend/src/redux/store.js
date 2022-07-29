@@ -2,6 +2,8 @@ import { combineReducers, createStore, applyMiddleware } from "redux";
 import thunk from "redux-thunk";
 import { composeWithDevTools } from "redux-devtools-extension";
 import {
+    addChatReducer,
+    allUsersReducer,
     authUserReducer,
     messagesReducer,
     updateUserReducer,
@@ -18,6 +20,8 @@ const allReducers = combineReducers({
     register: userRegisterReducer,
     contacts: userContactsReducer,
     updateUser: updateUserReducer,
+    allusers: allUsersReducer,
+    addChat: addChatReducer,
 });
 
 const rootReducer = (state, action) => {

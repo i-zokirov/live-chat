@@ -11,6 +11,13 @@ import {
     GET_USER_CONTACTS_FAILURE,
     GET_USER_CONTACTS_REQUEST,
     GET_USER_CONTACTS_SUCCESS,
+    GET_ALL_USERS_FAILURE,
+    GET_ALL_USERS_REQUEST,
+    GET_ALL_USERS_SUCCESS,
+    ADD_CHAT_FAILURE,
+    ADD_CHAT_REQUEST,
+    ADD_CHAT_SUCCESS,
+    ADD_CHAT_RESET,
     USER_LOGOUT,
     UPDATE_USER_RESET,
 } from "../constants/constants";
@@ -102,7 +109,7 @@ export const verifyToken = () => {
     };
 };
 
-export const getContacts = () => {
+export const getDMs = () => {
     return async (dispatch, getState) => {
         try {
             dispatch({ type: GET_USER_CONTACTS_REQUEST });
@@ -116,7 +123,7 @@ export const getContacts = () => {
                 },
             };
             const { data } = await axios.get(
-                `${baseUrl}/api/users/contacts`,
+                `${baseUrl}/api/users/${userData._id}/dms`,
                 config
             );
             dispatch({
@@ -132,6 +139,87 @@ export const getContacts = () => {
                 dispatch(logoutUser());
             }
             dispatch({ type: GET_USER_CONTACTS_FAILURE, payload: err });
+        }
+    };
+};
+export const getAllUsers = () => {
+    return async (dispatch, getState) => {
+        try {
+            dispatch({ type: GET_ALL_USERS_REQUEST });
+            const {
+                auth: { data: userData },
+            } = getState();
+
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${userData.token}`,
+                },
+            };
+            const { data } = await axios.get(`${baseUrl}/api/users`, config);
+            dispatch({
+                type: GET_ALL_USERS_SUCCESS,
+                payload: data,
+            });
+        } catch (error) {
+            const err =
+                error.response && error.response.data.message
+                    ? error.response.data.message
+                    : error.message;
+            if (err === "jwt expired") {
+                dispatch(logoutUser());
+            }
+            dispatch({ type: GET_ALL_USERS_FAILURE, payload: err });
+        }
+    };
+};
+export const addChat = (user) => {
+    return async (dispatch, getState) => {
+        try {
+            dispatch({ type: ADD_CHAT_REQUEST });
+            const {
+                auth: { data: currentUser },
+            } = getState();
+
+            const {
+                contacts: { contactlist },
+            } = getState();
+
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${currentUser.token}`,
+                },
+            };
+            const { data } = await axios.put(
+                `${baseUrl}/api/users/${currentUser._id}/dms/${user._id}`,
+                {},
+                config
+            );
+            console.log(data);
+            dispatch({
+                type: ADD_CHAT_SUCCESS,
+                payload: user,
+            });
+
+            if (!contactlist.some((x) => x._id === user._id)) {
+                dispatch({
+                    type: GET_USER_CONTACTS_SUCCESS,
+                    payload: [...contactlist, user],
+                });
+            }
+
+            setTimeout(() => {
+                dispatch({ type: ADD_CHAT_RESET });
+            }, 5000);
+        } catch (error) {
+            const err =
+                error.response && error.response.data.message
+                    ? error.response.data.message
+                    : error.message;
+            console.log(err);
+            if (err === "jwt expired") {
+                dispatch(logoutUser());
+            }
+            dispatch({ type: ADD_CHAT_FAILURE, payload: err });
         }
     };
 };
