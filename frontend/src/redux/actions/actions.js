@@ -185,8 +185,6 @@ export const loadMessages = (chatId) => {
                 auth: { data: userData },
             } = getState();
 
-            console.log("loading");
-
             const config = {
                 headers: {
                     Authorization: `Bearer ${userData.token}`,

@@ -148,13 +148,23 @@ export const getAllUsers = expressAsyncHandler(async (req, res) => {
 // @route:  PUT /api/users/:userId
 // @access: Private
 
-export const updateAvatar = expressAsyncHandler(async (req, res) => {
+export const updateUser = expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.params.userId);
     if (user) {
-        user.avatar = req.body.avatar;
+        user.avatar = req.body.avatar ? req.body.avatar : user.avatar;
+        user.name = req.body.name ? req.body.name : user.name;
+        user.email = req.body.email ? req.body.email : user.email;
 
-        await user.save();
-        res.json({ avatar: req.body.avatar });
+        if (req.body.newPassword) {
+            if (await user.matchPassword(req.body.password)) {
+                user.password = req.body.newPassword;
+            } else {
+                throw new Error("Invalid password");
+            }
+        }
+        const saved = await user.save();
+
+        res.json(saved);
     } else {
         res.status(404);
         throw new Error("User not found");

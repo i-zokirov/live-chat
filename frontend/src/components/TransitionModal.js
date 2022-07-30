@@ -13,7 +13,7 @@ const style = {
     bgcolor: "background.paper",
     border: "none",
     boxShadow: 24,
-    p: 4,
+    p: 0,
 };
 const TransitionModal = ({ open, customStyle, handleClose, children }) => {
     return (

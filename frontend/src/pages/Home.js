@@ -25,6 +25,7 @@ import { ADD_MESSAGE, LOAD_MESSAGES_RESET } from "../redux/constants/constants";
 import { getDMs, loadMessages, logoutUser } from "../redux/actions/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import EditProfile from "../components/EditProfile";
 
 const Home = () => {
     const [message, setMessage] = useState("");
@@ -35,7 +36,7 @@ const Home = () => {
     const [profileAnchor, setProfileAnchor] = useState(null);
     const [openEditProfile, setOpenEditProfile] = useState(false);
     const [currentWindow, setCurrentWindow] = useState("Chats");
-    const [lastMessageId, setLastMessageId] = useState(null);
+
     const openProfileMenu = Boolean(profileAnchor);
 
     const dispatch = useDispatch();
@@ -73,14 +74,15 @@ const Home = () => {
         }
     }, []);
 
-    let messageId = null;
     useEffect(() => {
         socket.emit("connection", () => {
             console.log("connection");
         });
         socket.emit("add-user", currentUserData._id);
         socket.on("message:created", (data) => {
-            if (messageId !== data.messageId) {
+            const lastmessageId = localStorage.getItem("lastmessageId");
+
+            if (lastmessageId !== data.messageId) {
                 dispatch({
                     type: ADD_MESSAGE,
                     payload: {
@@ -96,7 +98,7 @@ const Home = () => {
                         chatId: data.chatId,
                     },
                 });
-                messageId = data.messageId;
+                localStorage.setItem("lastmessageId", data.messageId);
             }
         });
     }, []);
@@ -325,12 +327,8 @@ const Home = () => {
                 anchorEl={profileAnchor}
                 handleClose={handleProfileMenuViewClose}
             />
-            <TransitionModal
-                open={openEditProfile}
-                handleClose={toggleEditProfileWindow}
-            >
-                Hello
-            </TransitionModal>
+            <EditProfile user={currentUserData} open={openEditProfile} handleClose={toggleEditProfileWindow}/>
+          
         </Box>
     );
 };

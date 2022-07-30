@@ -17,6 +17,7 @@ import TransitionModal from "./TransitionModal";
 import stringToColor from "../utils/stringToColor";
 
 import AddCommentIcon from "@mui/icons-material/AddComment";
+import { useTheme } from "@emotion/react";
 function stringAvatar(name) {
     return {
         sx: {
@@ -42,16 +43,26 @@ const UsersModalWindow = ({ open, handleClose }) => {
         dispatch(addChat(user));
         handleClose();
     };
+    const theme = useTheme();
     return (
         <TransitionModal
             open={open}
             handleClose={handleClose}
             customStyle={{ width: 400 }}
         >
-            <Box>
-                <Typography variant="h6">Contacts:</Typography>
+            <Box
+                sx={{
+                    bgcolor: theme.palette.primary.main,
+                    height: "100%",
+                    margin: 0,
+                    padding: 0,
+                }}
+            >
+                <Typography sx={{ color: "white", p: 2 }} variant="h6">
+                    Contacts:
+                </Typography>
             </Box>
-            <Box>
+            <Box sx={{ p: 2 }}>
                 <Searchbar />
             </Box>
             <Divider />
@@ -60,6 +71,7 @@ const UsersModalWindow = ({ open, handleClose }) => {
                 sx={{
                     height: "30vh",
                     overflowY: "scroll",
+                    p: 1,
                 }}
                 className="scrollbar"
             >
@@ -73,7 +85,7 @@ const UsersModalWindow = ({ open, handleClose }) => {
                                   height: "80px",
                                   padding: "15px",
                                   margin: "5px",
-                                  marginLeft: "12px",
+                                  marginLeft: "30px",
                                   display: "flex",
                                   justifyContent: "space-between",
                                   alignItems: "center",
