@@ -1,6 +1,7 @@
 import React from "react";
-import { Box, Card, Typography } from "@mui/material";
+import { Box, Card, Typography, Link } from "@mui/material";
 import getTime from "../utils/getTime";
+
 const Message = ({ message, theme }) => {
     return (
         <Box
@@ -42,8 +43,25 @@ const Message = ({ message, theme }) => {
                           }
                 }
             >
-                {message.type === "Text" && (
+                {message.type === "Text" ? (
                     <Typography variant="body1">{message.message}</Typography>
+                ) : (
+                    message.type === "Call" && (
+                        <>
+                            <Typography variant="body1">
+                                {message.message.split(" - ")[0]}
+                            </Typography>
+                            <Typography variant="body1">
+                                <Link
+                                    href={message.message.split(" - ")[1]}
+                                    underline="hover"
+                                    target="_blank"
+                                >
+                                    {message.message.split(" - ")[1]}
+                                </Link>
+                            </Typography>
+                        </>
+                    )
                 )}
                 <Box
                     sx={{

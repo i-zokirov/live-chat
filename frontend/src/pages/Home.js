@@ -169,6 +169,44 @@ const Home = () => {
         setMessage("");
     };
 
+    const handleCall = (callType) => {
+        console.log("emiting call message");
+        const callMessage = {
+            to: currentChat._id,
+            from: currentUserData._id,
+            senderName: currentUserData.name,
+            message: "",
+            type: "Call",
+            senderSocketId: socket.id,
+            callType,
+            date: new Date(),
+        };
+        socket.emit("message:create", callMessage, (res) => {
+            console.log(res);
+            if (res.error) {
+                console.log(res.error);
+            } else if (res.data) {
+                const { type, date, _id } = res.data;
+                const newmessage = {
+                    chatId: currentChat._id,
+                    messageData: [
+                        {
+                            type,
+                            message: `${currentUserData.name} invited for ${callType} call. Join using this link: - http://localhost:3000/videochat/${_id}`,
+                            party: "sender",
+                            senderName: currentUserData.name,
+                            date,
+                        },
+                    ],
+                };
+                dispatch({
+                    type: ADD_MESSAGE,
+                    payload: newmessage,
+                });
+            }
+        });
+    };
+
     // manages current chat window
     const handleCurrentChat = (contact) => {
         localStorage.setItem("currentChat", JSON.stringify(contact));
@@ -310,6 +348,7 @@ const Home = () => {
                     >
                         {currentChat && (
                             <ChatWindow
+                                handleCall={handleCall}
                                 currentChat={currentChat}
                                 inputValue={message}
                                 inputValueChange={handleMessageChange}

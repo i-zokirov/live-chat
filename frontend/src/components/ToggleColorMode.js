@@ -55,7 +55,7 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
     },
 }));
 
-const ToggleColorMode = () => {
+const ToggleColorMode = ({sx}) => {
     const theme = useTheme();
     const colorMode = useContext(ColorModeContext);
     return (
@@ -70,6 +70,7 @@ const ToggleColorMode = () => {
                 borderRadius: 1,
                 p: 3,
                 height: "20px",
+                ...sx
             }}
         >
             <Tooltip

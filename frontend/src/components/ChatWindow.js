@@ -51,6 +51,7 @@ const ChatWindow = ({
     toggleEmoji,
     archiveChat,
     deleteChat,
+    handleCall,
 }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const openMenu = Boolean(anchorEl);
@@ -108,6 +109,14 @@ const ChatWindow = ({
         if (showEmoji) {
             setShowEmoji(false);
         }
+    };
+
+    const callVideo = () => {
+        handleCall("video");
+    };
+
+    const callAudio = () => {
+        handleCall("audio");
     };
 
     useEffect(() => {
@@ -171,12 +180,18 @@ const ChatWindow = ({
                         marginRight: "20px",
                     }}
                 >
-                    <IconButton sx={{ width: 60, height: 60 }}>
+                    <IconButton
+                        sx={{ width: 60, height: 60 }}
+                        onClick={callVideo}
+                    >
                         <Tooltip title="Video call" placement="bottom">
                             <VideoCameraFrontIcon />
                         </Tooltip>
                     </IconButton>
-                    <IconButton sx={{ width: 60, height: 60 }}>
+                    <IconButton
+                        sx={{ width: 60, height: 60 }}
+                        onClick={callAudio}
+                    >
                         <Tooltip title="Call" placement="bottom">
                             <CallIcon />
                         </Tooltip>

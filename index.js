@@ -32,6 +32,11 @@ io.on("connection", (socket) => {
         onlineUsers.set(userId, socket.id);
     });
     socket.on("message:create", handleMessage);
+
+    socket.on("join-room", ({ videochatId: roomId, userId }) => {
+        socket.join(roomId);
+        socket.to(roomId).emit("user-connected", userId);
+    });
 });
 
 // ROUTE HANDLERS

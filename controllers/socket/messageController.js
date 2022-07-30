@@ -2,8 +2,16 @@ import Message from "../../mongoose-data-models/MessageModel.js";
 
 export const handleMessage = async function (payload, callback) {
     const socket = this;
-    const { type, date, message, from, to, senderSocketId, senderName } =
-        payload;
+    const {
+        type,
+        date,
+        message,
+        from,
+        to,
+        senderSocketId,
+        senderName,
+        callType,
+    } = payload;
     let newMessage;
     try {
         newMessage = await Message.create({
@@ -15,7 +23,13 @@ export const handleMessage = async function (payload, callback) {
         });
         console.log(newMessage);
     } catch (error) {
+        console.info(error);
         return callback({ error: "Database error!" });
+    }
+
+    if (type === "Call") {
+        newMessage.message = `${senderName} invited for ${callType} call. Join using this link: - http://localhost:3000/videochat/${newMessage._id}`;
+        await newMessage.save();
     }
 
     // Acknowledge creation
@@ -25,7 +39,10 @@ export const handleMessage = async function (payload, callback) {
     const receiver = onlineUsers.get(to);
     if (receiver) {
         socket.to(receiver).emit("message:created", {
-            message: newMessage.message,
+            message:
+                newMessage.type === "Call"
+                    ? `${senderName} invited for ${callType} call. Join using this link: - http://localhost:3000/videochat/${newMessage._id}`
+                    : newMessage.message,
             senderSocketId: senderSocketId,
             messageId: newMessage._id.toString(),
             senderName: senderName,
@@ -34,4 +51,6 @@ export const handleMessage = async function (payload, callback) {
             type: newMessage.type,
         });
     }
+
+  
 };

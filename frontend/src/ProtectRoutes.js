@@ -6,6 +6,7 @@ const ProtectRoute = ({
     redirectPath = "/signin",
 }) => {
     const location = useLocation();
+
     if (!authenticated) {
         return (
             <Navigate

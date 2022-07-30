@@ -35,7 +35,7 @@ const ChoosAvatar = () => {
     };
 
     const goBack = () => {
-        navigate(-1);
+        navigate("/chats");
     };
 
     useEffect(() => {

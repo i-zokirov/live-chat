@@ -4,13 +4,12 @@ const messageSchema = mongoose.Schema(
     {
         type: {
             type: String,
-            enum: ["Text", "Image", "File"],
+            enum: ["Text", "Image", "File", "Call"],
             default: "Text",
             required: true,
         },
         message: {
             type: String,
-            required: true,
         },
         participants: {
             type: Array,

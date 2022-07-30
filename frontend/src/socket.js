@@ -6,7 +6,7 @@ const options = {
     secure: true,
     rejectUnauthorized: false,
 };
-const localhost = "http://localhost:5000";
+export const localhost = "http://localhost:5000";
 
 const socket = io.connect(localhost, options);
 
