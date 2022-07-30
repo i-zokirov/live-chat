@@ -8,6 +8,7 @@ import {
     loadedChatsReducer,
     loadMessagesReducer,
     messagesReducer,
+    notificationReducer,
     updateUserReducer,
     userContactsReducer,
     userRegisterReducer,
@@ -26,6 +27,7 @@ const allReducers = combineReducers({
     addChat: addChatReducer,
     loadMessages: loadMessagesReducer,
     loadedChats: loadedChatsReducer,
+    notification: notificationReducer,
 });
 
 const rootReducer = (state, action) => {

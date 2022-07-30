@@ -6,6 +6,7 @@ import { useTheme } from "@mui/material/styles";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import LogoutIcon from "@mui/icons-material/Logout";
 import FaceIcon from "@mui/icons-material/Face";
+
 // CUSTOM COMPONENTS
 import Header from "../components/Header";
 import Chats from "../components/Chats";
@@ -16,7 +17,6 @@ import ChatWindow from "../components/ChatWindow";
 import Logo from "../components/Logo";
 import MyStatus from "../components/MyStatus";
 import ActionMenu from "../components/ActionMenu";
-import TransitionModal from "../components/TransitionModal";
 import Searchbar from "../components/Searchbar";
 import socket from "../socket";
 
@@ -26,6 +26,7 @@ import { getDMs, loadMessages, logoutUser } from "../redux/actions/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import EditProfile from "../components/EditProfile";
+import Notification from "../components/Notification";
 
 const Home = () => {
     const [message, setMessage] = useState("");
@@ -244,92 +245,108 @@ const Home = () => {
     ];
 
     return (
-        <Box
-            sx={{
-                height: "100vh",
-                overflow: "hidden",
-            }}
-        >
-            <Grid container spacing={0}>
-                <Grid item xs={0.8} sx={{ borderRight: "0.5px solid #bdbdbd" }}>
-                    <Logo />
-                    <AppBarItems
-                        handleAppBarClick={handleAppBarClick}
-                        handleLogout={handleLogout}
-                        currentWindow={currentWindow}
-                        selectedColor={
-                            theme.palette.mode === "light"
-                                ? theme.palette.primary.main
-                                : theme.palette.secondary.main
-                        }
-                    />
-
-                    <User
-                        handleProfileMenuView={handleProfileMenuView}
-                        currentUserData={currentUserData}
-                    />
-                </Grid>
-                <Grid item xs={2.7} sx={{ borderRight: "0.5px solid #bdbdbd" }}>
-                    <Box>
-                        <Header title={currentWindow} />
-
-                        {currentWindow === "Chats" && (
-                            <>
-                                <Searchbar />
-                                <Chats
-                                    contactlist={contactlist}
-                                    currentChat={currentChat}
-                                    handleCurrentChat={handleCurrentChat}
-                                    deleteChat={deleteChat}
-                                    archiveChat={archiveChat}
-                                />
-                            </>
-                        )}
-                    </Box>
-                </Grid>
-
-                <Grid
-                    item
-                    xs={6}
-                    sx={{
-                        borderRight: "0.5px solid #bdbdbd",
-                        margin: 0,
-                        padding: 0,
-                    }}
-                >
-                    {currentChat && (
-                        <ChatWindow
-                            currentChat={currentChat}
-                            inputValue={message}
-                            inputValueChange={handleMessageChange}
-                            handleSendMessage={handleSendMessage}
-                            chatId={currentChat._id}
-                            toggleEmoji={toggleEmoji}
-                            onEmojiClick={onEmojiClick}
-                            showEmoji={showEmoji}
-                            setShowEmoji={setShowEmoji}
-                            deleteChat={deleteChat}
-                            archiveChat={archiveChat}
+        <>
+            <Notification />
+            <Box
+                sx={{
+                    height: "100vh",
+                    overflow: "hidden",
+                }}
+            >
+                <Grid container spacing={0}>
+                    <Grid
+                        item
+                        xs={0.8}
+                        sx={{ borderRight: "0.5px solid #bdbdbd" }}
+                    >
+                        <Logo />
+                        <AppBarItems
+                            handleAppBarClick={handleAppBarClick}
+                            handleLogout={handleLogout}
+                            currentWindow={currentWindow}
+                            selectedColor={
+                                theme.palette.mode === "light"
+                                    ? theme.palette.primary.main
+                                    : theme.palette.secondary.main
+                            }
                         />
-                    )}
-                </Grid>
 
-                <Grid item xs={2.5}>
-                    <MyStatus status={status} setStatus={setStatus} />
+                        <User
+                            handleProfileMenuView={handleProfileMenuView}
+                            currentUserData={currentUserData}
+                        />
+                    </Grid>
+                    <Grid
+                        item
+                        xs={2.7}
+                        sx={{ borderRight: "0.5px solid #bdbdbd" }}
+                    >
+                        <Box>
+                            <Header title={currentWindow} />
 
-                    {currentChat && <ChatProfile currentChat={currentChat} />}
+                            {currentWindow === "Chats" && (
+                                <>
+                                    <Searchbar />
+                                    <Chats
+                                        contactlist={contactlist}
+                                        currentChat={currentChat}
+                                        handleCurrentChat={handleCurrentChat}
+                                        deleteChat={deleteChat}
+                                        archiveChat={archiveChat}
+                                    />
+                                </>
+                            )}
+                        </Box>
+                    </Grid>
+
+                    <Grid
+                        item
+                        xs={6}
+                        sx={{
+                            borderRight: "0.5px solid #bdbdbd",
+                            margin: 0,
+                            padding: 0,
+                        }}
+                    >
+                        {currentChat && (
+                            <ChatWindow
+                                currentChat={currentChat}
+                                inputValue={message}
+                                inputValueChange={handleMessageChange}
+                                handleSendMessage={handleSendMessage}
+                                chatId={currentChat._id}
+                                toggleEmoji={toggleEmoji}
+                                onEmojiClick={onEmojiClick}
+                                showEmoji={showEmoji}
+                                setShowEmoji={setShowEmoji}
+                                deleteChat={deleteChat}
+                                archiveChat={archiveChat}
+                            />
+                        )}
+                    </Grid>
+
+                    <Grid item xs={2.5}>
+                        <MyStatus status={status} setStatus={setStatus} />
+
+                        {currentChat && (
+                            <ChatProfile currentChat={currentChat} />
+                        )}
+                    </Grid>
                 </Grid>
-            </Grid>
-            <ActionMenu
-                items={profileMenuItems}
-                id={"Profile-menu"}
-                open={openProfileMenu}
-                anchorEl={profileAnchor}
-                handleClose={handleProfileMenuViewClose}
-            />
-            <EditProfile user={currentUserData} open={openEditProfile} handleClose={toggleEditProfileWindow}/>
-          
-        </Box>
+                <ActionMenu
+                    items={profileMenuItems}
+                    id={"Profile-menu"}
+                    open={openProfileMenu}
+                    anchorEl={profileAnchor}
+                    handleClose={handleProfileMenuViewClose}
+                />
+                <EditProfile
+                    user={currentUserData}
+                    open={openEditProfile}
+                    handleClose={toggleEditProfileWindow}
+                />
+            </Box>
+        </>
     );
 };
 

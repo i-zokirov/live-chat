@@ -40,6 +40,10 @@ const EditProfile = ({ open, handleClose, user }) => {
                 newPassword,
             };
             dispatch(updateUser(reqbody));
+
+            setnewPassword("");
+            setCurrentPassword("");
+            handleClose();
         }
     };
     return (

@@ -26,6 +26,8 @@ import {
     UPDATE_USER_RESET,
     ADD_CHAT_RESET,
     LOADED_CHATS,
+    DISPATCH_NOTIFICATION,
+    RESET_NOTIFICATION,
 } from "../constants/constants";
 
 export const messagesReducer = (state = {}, action) => {
@@ -49,6 +51,21 @@ export const messagesReducer = (state = {}, action) => {
             return state;
     }
 };
+export const notificationReducer = (state = {}, action) => {
+    switch (action.type) {
+        case DISPATCH_NOTIFICATION:
+            return {
+                type: action.payload.type,
+                message: action.payload.message,
+                title: action.payload.title,
+            };
+        case RESET_NOTIFICATION:
+            return {};
+        default:
+            return state;
+    }
+};
+
 export const loadedChatsReducer = (state = [], action) => {
     switch (action.type) {
         case LOADED_CHATS:

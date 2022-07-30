@@ -24,9 +24,37 @@ import {
     USER_LOGOUT,
     UPDATE_USER_RESET,
     LOADED_CHATS,
+    DISPATCH_NOTIFICATION,
+    RESET_NOTIFICATION,
 } from "../constants/constants";
 import axios from "axios";
 import baseUrl from "../../baseUrl";
+
+export const resetNotification = () => {
+    return (dispatch) => {
+        dispatch({ type: RESET_NOTIFICATION });
+    };
+};
+
+export const dispatchNotification = (
+    notification,
+    autoReset = true,
+    timeout = 3000
+) => {
+    return (dispatch) => {
+        dispatch({
+            type: DISPATCH_NOTIFICATION,
+            payload: notification,
+        });
+
+        // if (autoReset) {
+        setTimeout(() => {
+            dispatch({ type: RESET_NOTIFICATION });
+            console.log("Notification reset");
+        }, timeout);
+        // }
+    };
+};
 
 export const registerUser = (reqbody) => {
     return async (dispatch) => {
@@ -143,6 +171,13 @@ export const getDMs = () => {
                 dispatch(logoutUser());
             }
             dispatch({ type: GET_USER_CONTACTS_FAILURE, payload: err });
+            dispatch(
+                dispatchNotification({
+                    type: "error",
+                    title: "Error",
+                    message: err,
+                })
+            );
         }
     };
 };
@@ -173,6 +208,13 @@ export const getAllUsers = () => {
                 dispatch(logoutUser());
             }
             dispatch({ type: GET_ALL_USERS_FAILURE, payload: err });
+            dispatch(
+                dispatchNotification({
+                    type: "error",
+                    title: "Error",
+                    message: err,
+                })
+            );
         }
     };
 };
@@ -211,6 +253,14 @@ export const loadMessages = (chatId) => {
                 dispatch(logoutUser());
             }
             dispatch({ type: LOAD_MESSAGES_FAILURE, payload: err });
+
+            dispatch(
+                dispatchNotification({
+                    type: "error",
+                    title: "Error",
+                    message: err,
+                })
+            );
         }
     };
 };
@@ -262,6 +312,13 @@ export const addChat = (user) => {
                 dispatch(logoutUser());
             }
             dispatch({ type: ADD_CHAT_FAILURE, payload: err });
+            dispatch(
+                dispatchNotification({
+                    type: "error",
+                    title: "Error",
+                    message: err,
+                })
+            );
         }
     };
 };
@@ -291,14 +348,21 @@ export const updateUser = (reqbody) => {
 
             dispatch({
                 type: AUTHENTICATE_USER_SUCCESS,
-                payload: { ...userData, avatar: data.avatar },
+                payload: { ...userData, ...data },
             });
 
             localStorage.setItem(
                 "userData",
                 JSON.stringify({
                     ...userData,
-                    avatar: data.avatar,
+                    ...data,
+                })
+            );
+            dispatch(
+                dispatchNotification({
+                    type: "success",
+                    title: "Success",
+                    message: "Profile has been successfully updated!",
                 })
             );
             setTimeout(() => {
@@ -316,6 +380,13 @@ export const updateUser = (reqbody) => {
             setTimeout(() => {
                 dispatch({ type: UPDATE_USER_RESET });
             }, 5000);
+            dispatch(
+                dispatchNotification({
+                    type: "error",
+                    title: "Error",
+                    message: err,
+                })
+            );
         }
     };
 };
