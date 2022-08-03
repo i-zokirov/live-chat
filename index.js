@@ -9,7 +9,10 @@ import userRoutes from "./routers/userRoutes.js";
 import messageRoutes from "./routers/messageRoutes.js";
 
 import dotenv from "dotenv";
-import { handleMessage } from "./controllers/socket/messageController.js";
+import {
+    handleMessage,
+    fetchVideoChatData,
+} from "./controllers/socket/messageController.js";
 
 dotenv.config();
 
@@ -32,10 +35,15 @@ io.on("connection", (socket) => {
         onlineUsers.set(userId, socket.id);
     });
     socket.on("message:create", handleMessage);
-
-    socket.on("join-room", ({ videochatId: roomId, userId }) => {
+    socket.on("fetch-videochatData", fetchVideoChatData);
+    socket.on("join-room", ({ videochatId: roomId, user }) => {
         socket.join(roomId);
-        socket.to(roomId).emit("user-connected", userId);
+        socket.to(roomId).emit("user-connected", user);
+
+        socket.on("disconnect", () => {
+            console.log("User disconnected");
+            socket.to(roomId).emit("user-disconnected", user);
+        });
     });
 });
 

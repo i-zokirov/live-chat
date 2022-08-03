@@ -3,6 +3,7 @@ import thunk from "redux-thunk";
 import { composeWithDevTools } from "redux-devtools-extension";
 import {
     addChatReducer,
+    addCurrentChatReducer,
     allUsersReducer,
     authUserReducer,
     loadedChatsReducer,
@@ -28,6 +29,7 @@ const allReducers = combineReducers({
     loadMessages: loadMessagesReducer,
     loadedChats: loadedChatsReducer,
     notification: notificationReducer,
+    currentChat: addCurrentChatReducer,
 });
 
 const rootReducer = (state, action) => {

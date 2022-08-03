@@ -1,4 +1,5 @@
 import Message from "../../mongoose-data-models/MessageModel.js";
+import User from "../../mongoose-data-models/userModel.js";
 
 export const handleMessage = async function (payload, callback) {
     const socket = this;
@@ -51,6 +52,26 @@ export const handleMessage = async function (payload, callback) {
             type: newMessage.type,
         });
     }
+};
 
-  
+export const fetchVideoChatData = async function (videochatId, callback) {
+    const socket = this;
+    try {
+        const message = await Message.findById(videochatId).populate(
+            "sender",
+            "name email avatar"
+        );
+
+        const participants = [];
+
+        for (let id of message.participants) {
+            const user = await User.findById(id).select("name email avatar");
+            participants.push(user);
+        }
+
+        callback({ videochat: message, participants });
+    } catch (error) {
+        console.log(error);
+        return callback({ error: "Database error!" });
+    }
 };

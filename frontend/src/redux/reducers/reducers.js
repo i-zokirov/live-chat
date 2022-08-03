@@ -28,6 +28,8 @@ import {
     LOADED_CHATS,
     DISPATCH_NOTIFICATION,
     RESET_NOTIFICATION,
+    ADD_CURRENT_CHAT,
+    RESET_CURRENT_CHAT,
 } from "../constants/constants";
 
 export const messagesReducer = (state = {}, action) => {
@@ -51,6 +53,20 @@ export const messagesReducer = (state = {}, action) => {
             return state;
     }
 };
+
+export const addCurrentChatReducer = (state = {}, action) => {
+    switch (action.type) {
+        case ADD_CURRENT_CHAT:
+            return {
+                data: action.payload,
+            };
+        case RESET_CURRENT_CHAT:
+            return {};
+        default:
+            return state;
+    }
+};
+
 export const notificationReducer = (state = {}, action) => {
     switch (action.type) {
         case DISPATCH_NOTIFICATION:

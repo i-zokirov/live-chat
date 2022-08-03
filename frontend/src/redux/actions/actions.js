@@ -26,6 +26,7 @@ import {
     LOADED_CHATS,
     DISPATCH_NOTIFICATION,
     RESET_NOTIFICATION,
+    LOAD_MESSAGES_RESET,
 } from "../constants/constants";
 import axios from "axios";
 import baseUrl from "../../baseUrl";
@@ -227,23 +228,31 @@ export const loadMessages = (chatId) => {
                 auth: { data: userData },
             } = getState();
 
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${userData.token}`,
-                },
-            };
-            const { data } = await axios.get(
-                `${baseUrl}/api/messages?receiver=${chatId}`,
-                config
-            );
-            dispatch({
-                type: LOAD_MESSAGES_SUCCESS,
-                payload: data,
-            });
-            dispatch({
-                type: LOADED_CHATS,
-                payload: chatId,
-            });
+            const { loadedChats } = getState();
+            if (!loadedChats.includes(chatId)) {
+                const config = {
+                    headers: {
+                        Authorization: `Bearer ${userData.token}`,
+                    },
+                };
+                const { data } = await axios.get(
+                    `${baseUrl}/api/messages?receiver=${chatId}`,
+                    config
+                );
+
+                dispatch({
+                    type: LOAD_MESSAGES_SUCCESS,
+                    payload: data,
+                });
+                dispatch({
+                    type: LOADED_CHATS,
+                    payload: chatId,
+                });
+            } else {
+                dispatch({
+                    type: LOAD_MESSAGES_RESET,
+                });
+            }
         } catch (error) {
             const err =
                 error.response && error.response.data.message

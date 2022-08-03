@@ -45,23 +45,23 @@ const Message = ({ message, theme }) => {
             >
                 {message.type === "Text" ? (
                     <Typography variant="body1">{message.message}</Typography>
+                ) : message.type === "Call" ? (
+                    <>
+                        <Typography variant="body1">
+                            {message.message.split(" - ")[0]}
+                        </Typography>
+                        <Typography variant="body1">
+                            <Link
+                                href={message.message.split(" - ")[1]}
+                                underline="hover"
+                                target="_blank"
+                            >
+                                {message.message.split(" - ")[1]}
+                            </Link>
+                        </Typography>
+                    </>
                 ) : (
-                    message.type === "Call" && (
-                        <>
-                            <Typography variant="body1">
-                                {message.message.split(" - ")[0]}
-                            </Typography>
-                            <Typography variant="body1">
-                                <Link
-                                    href={message.message.split(" - ")[1]}
-                                    underline="hover"
-                                    target="_blank"
-                                >
-                                    {message.message.split(" - ")[1]}
-                                </Link>
-                            </Typography>
-                        </>
-                    )
+                    ""
                 )}
                 <Box
                     sx={{

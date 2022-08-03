@@ -7,88 +7,124 @@ import {
     CardMedia,
     IconButton,
     Tooltip,
+    CardHeader,
+    CardContent,
+    Paper,
+    Avatar,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useParams } from "react-router-dom";
 import React, { useEffect, useRef, useState } from "react";
 import ToggleColorMode from "../components/ToggleColorMode";
-import VideocamIcon from "@mui/icons-material/Videocam";
-import VideocamOffIcon from "@mui/icons-material/VideocamOff";
-import MicIcon from "@mui/icons-material/Mic";
-import MicOffIcon from "@mui/icons-material/MicOff";
-import CancelIcon from "@mui/icons-material/Cancel";
+import VideoChatActionButtons from "../components/VideoChatActionButtons";
+import VideoChatWindow from "../components/VideoChatWindow";
+
 import socket, { localhost } from "../socket";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import stringAvatar from "../utils/stringAvatar";
 import Peer from "peerjs";
-const iconBtn = {
-    width: "60px",
-    height: "60px",
-    marginRight: "10px",
-};
-const icon = {
-    width: "35px",
-    height: "35px",
-};
+
+import { ADD_CURRENT_CHAT } from "../redux/constants/constants";
+
 const VideCall = () => {
     const [muteMic, setMuteMic] = useState(false);
     const [disableCamera, setDisableCamera] = useState(false);
 
+    const [participants, setParticipants] = useState([]);
+
     const { videochatId } = useParams();
     const { data: currentUserData } = useSelector((state) => state.auth);
+    const remoteVideoRef = useRef(null);
+    const currentUserVideoRef = useRef(null);
+
+    const dispatch = useDispatch();
+    const myStream = useRef(null);
+
     const toggleCamera = () => {
         setDisableCamera((prev) => !prev);
+
+        const enabled = myStream.current.getVideoTracks()[0].enabled;
+        if (enabled) {
+            myStream.current.getVideoTracks()[0].enabled = false;
+        } else {
+            myStream.current.getVideoTracks()[0].enabled = true;
+        }
     };
 
     const toggleMic = () => {
         setMuteMic((prev) => !prev);
+        const enabled = myStream.current.getAudioTracks()[0].enabled;
+        if (enabled) {
+            myStream.current.getAudioTracks()[0].enabled = false;
+        } else {
+            myStream.current.getAudioTracks()[0].enabled = true;
+        }
     };
     const handleEndCall = () => {
         console.log("End call");
     };
-    const remoteVideoRef = useRef(null);
-    const currentUserVideoRef = useRef(null);
-    const peerInstance = useRef(null);
 
     useEffect(() => {
         const myPeer = new Peer(currentUserData._id);
-        peerInstance.current = myPeer;
 
         socket.emit("connection", () => {
             console.log("connection");
+        });
+        socket.emit("add-user", currentUserData._id);
+        socket.emit("fetch-videochatData", videochatId, function (data) {
+            if (data.participants) {
+                const remoteUser = [];
+                for (let participant of data.participants) {
+                    if (participant._id !== currentUserData._id) {
+                        remoteUser.push(participant);
+                    }
+                }
+                dispatch({
+                    type: ADD_CURRENT_CHAT,
+                    payload: remoteUser[0],
+                });
+
+                setParticipants(data.participants);
+            }
         });
 
         myPeer.on("open", (currentPeerId) => {
             console.log("currentpeerId", currentPeerId);
             socket.emit("join-room", {
                 videochatId,
-                userId: currentPeerId,
+                user: currentUserData,
             });
         });
 
         myPeer.on("call", (call) => {
             const getUserMedia = navigator.getUserMedia;
-            getUserMedia({ video: true, audio: true }, (stream) => {
-                currentUserVideoRef.current.srcObject = stream;
+            getUserMedia({ video: true, audio: true }, (mystream) => {
+                myStream.current = mystream;
+                currentUserVideoRef.current.srcObject = mystream;
 
-                call.answer(stream);
+                call.answer(mystream);
                 call.on("stream", function (remoteStream) {
                     remoteVideoRef.current.srcObject = remoteStream;
                 });
             });
         });
 
-        socket.on("user-connected", (userId) => {
-            console.log("user-connected", userId);
-            connectToNewUser(userId, myPeer);
+        socket.on("user-connected", (user) => {
+            console.log("user-connected", user.name);
+            connectToNewUser(user._id, myPeer);
+        });
+
+        socket.on("user-disconnected", (user) => {
+            console.log(user);
         });
     }, []);
 
     const connectToNewUser = (remotePeerId, myPeer) => {
         const getUserMedia = navigator.getUserMedia;
-        getUserMedia({ video: true, audio: true }, (stream) => {
-            currentUserVideoRef.current.srcObject = stream;
-
-            const remoteCall = myPeer.call(remotePeerId, stream);
+        getUserMedia({ video: true, audio: true }, (mystream) => {
+            currentUserVideoRef.current.srcObject = mystream;
+            myStream.current = mystream;
+            const remoteCall = myPeer.call(remotePeerId, mystream);
             remoteCall.on("stream", (remoteStream) => {
                 remoteVideoRef.current.srcObject = remoteStream;
             });
@@ -99,7 +135,7 @@ const VideCall = () => {
     const header = {
         bgcolor:
             theme.palette.mode === "light"
-                ? theme.palette.grey[50]
+                ? theme.palette.grey[100]
                 : theme.palette.primary.black[900],
     };
 
@@ -118,9 +154,7 @@ const VideCall = () => {
                     ...header,
                 }}
             >
-                <Typography variant="h6">
-                    Video Chat - {currentUserData.name} - {currentUserData._id}
-                </Typography>
+                <Typography variant="h6">Video Chat</Typography>
                 <ToggleColorMode sx={{ width: "200px", ...header }} />
             </Box>
             <Grid
@@ -139,126 +173,107 @@ const VideCall = () => {
                             height: "90%",
                         }}
                     >
-                        <Card
+                        <Paper
                             sx={{
-                                height: "400px",
+                                height: "45vh",
                                 width: "600px",
                                 margin: "20px",
                             }}
                         >
-                            {/* <CardMedia> */}
-                            {currentUserData.name}
-                            <video
-                                width="500px"
-                                height="400px"
-                                ref={currentUserVideoRef}
-                                onLoadedMetadata={(e) => e.currentTarget.play()}
-                            />
-                            {/* </CardMedia> */}
-                        </Card>
-                        <Card
-                            sx={{
-                                height: "400px",
-                                width: "600px",
-                                margin: "20px",
-                            }}
-                        >
-                            {/* <CardMedia> */}
-                            <video
-                                width="500px"
-                                height="400px"
-                                ref={remoteVideoRef}
-                                onLoadedMetadata={(e) => e.currentTarget.play()}
-                            />
-                            {/* </CardMedia> */}
-                        </Card>
-                    </Container>
-                    <Box
-                        sx={{
-                            ...header,
-                            height: "10%",
-                        }}
-                    >
-                        <Container
-                            sx={{
-                                height: "100%",
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                            }}
-                        >
-                            <Box>
-                                <IconButton sx={iconBtn} onClick={toggleCamera}>
-                                    {disableCamera ? (
-                                        <Tooltip
-                                            title="Turn on camera"
-                                            placement="top"
-                                        >
-                                            <VideocamOffIcon
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    flexDirection: "column",
+                                    margin: "5px",
+                                    padding: "5px",
+                                    overflow: "hidden",
+                                }}
+                            >
+                                {disableCamera ? (
+                                    <Box>
+                                        {currentUserData.avatar ? (
+                                            <Avatar
+                                                src={currentUserData.avatar}
                                                 sx={{
-                                                    ...icon,
+                                                    m: 1,
+                                                    height: 300,
+                                                    width: 300,
                                                 }}
                                             />
-                                        </Tooltip>
-                                    ) : (
-                                        <Tooltip
-                                            title="Turn Off camera"
-                                            placement="top"
-                                        >
-                                            <VideocamIcon
-                                                sx={{
-                                                    ...icon,
-                                                }}
+                                        ) : (
+                                            <Avatar
+                                                {...stringAvatar(
+                                                    currentUserData.name,
+                                                    300,
+                                                    300
+                                                )}
                                             />
-                                        </Tooltip>
-                                    )}
-                                </IconButton>
-                                <IconButton sx={iconBtn} onClick={toggleMic}>
-                                    {muteMic ? (
-                                        <Tooltip
-                                            title="Turn on Microphone"
-                                            placement="top"
-                                        >
-                                            <MicOffIcon
-                                                sx={{
-                                                    ...icon,
-                                                }}
-                                            />
-                                        </Tooltip>
-                                    ) : (
-                                        <Tooltip
-                                            title="Turn Off Microphone"
-                                            placement="top"
-                                        >
-                                            <MicIcon
-                                                sx={{
-                                                    ...icon,
-                                                }}
-                                            />
-                                        </Tooltip>
-                                    )}
-                                </IconButton>
-                            </Box>
-
-                            <Box>
-                                <IconButton
-                                    sx={iconBtn}
-                                    onClick={handleEndCall}
-                                >
-                                    <Tooltip title="End call" placement="top">
-                                        <CancelIcon
+                                        )}
+                                        <Box
                                             sx={{
-                                                ...icon,
-                                                color: "secondary.main",
+                                                display: "flex",
+                                                justifyContent: "center",
                                             }}
-                                        />
-                                    </Tooltip>
-                                </IconButton>
+                                        >
+                                            <Typography variant={"h5"}>
+                                                {currentUserData.name}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                ) : (
+                                    <video
+                                        width="90%"
+                                        height="90%"
+                                        ref={currentUserVideoRef}
+                                        onLoadedMetadata={(e) =>
+                                            e.currentTarget.play()
+                                        }
+                                    />
+                                )}
                             </Box>
-                        </Container>
-                    </Box>
+                        </Paper>
+                        <Paper
+                            sx={{
+                                height: "45vh",
+                                width: "600px",
+                                margin: "20px",
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    margin: "5px",
+                                    padding: "5px",
+                                    overflow: "hidden",
+                                }}
+                            >
+                                <video
+                                    width="90%"
+                                    height="90%"
+                                    ref={remoteVideoRef}
+                                    onLoadedMetadata={(e) =>
+                                        e.currentTarget.play()
+                                    }
+                                />
+                            </Box>
+                        </Paper>
+                    </Container>
+                    <VideoChatActionButtons
+                        header={header}
+                        disableCamera={disableCamera}
+                        toggleCamera={toggleCamera}
+                        muteMic={muteMic}
+                        toggleMic={toggleMic}
+                        handleEndCall={handleEndCall}
+                    />
                 </Grid>
-                <Grid item xs={4}></Grid>
+                <Grid item xs={4}>
+                    <VideoChatWindow />
+                </Grid>
             </Grid>
         </Box>
     );
