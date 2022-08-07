@@ -15,6 +15,8 @@ import stringToColor from "../utils/stringToColor";
 import ActionMenu from "./ActionMenu";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useDispatch } from "react-redux";
+
 function stringAvatar(name) {
     return {
         sx: {
@@ -25,6 +27,7 @@ function stringAvatar(name) {
         children: `${name.split(" ")[0][0]}`,
     };
 }
+
 const ChatItem = ({
     selected,
     contact,
@@ -34,6 +37,7 @@ const ChatItem = ({
 }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const openMenu = Boolean(anchorEl);
+    const dispatch = useDispatch();
 
     const handleOpenMenuClick = (e) => {
         setAnchorEl(e.currentTarget);

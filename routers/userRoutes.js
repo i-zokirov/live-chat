@@ -2,6 +2,7 @@ import express from "express";
 import {
     addDM,
     authenticate,
+    deleteDM,
     getAllUsers,
     getDMs,
     registerUser,
@@ -16,10 +17,13 @@ router.post("/signup", registerUser);
 router.post("/signin", authenticate);
 router.get("/token", verifyToken);
 
-// protected routs that require user to be signed in
+// protected routes that require user to be signed in
 router.get("/", protect, getAllUsers);
 router.put("/:userId", protect, updateUser);
 router.get("/:userId/dms", protect, getDMs);
-router.put("/:userId/dms/:dmId", protect, addDM);
+router
+    .route("/:userId/dms/:dmId")
+    .put(protect, addDM)
+    .delete(protect, deleteDM);
 
 export default router;

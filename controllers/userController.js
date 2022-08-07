@@ -133,6 +133,44 @@ export const addDM = expressAsyncHandler(async (req, res) => {
     res.json({ message: "Success" });
 });
 
+// @desc:   delete DM
+// @route:  delete /api/users/:userId/dms/:dmId
+// @access: Private
+export const deleteDM = expressAsyncHandler(async (req, res) => {
+    console.log(`DELETE DM Request`);
+    const user = await User.findById(req.params.userId).populate(
+        "dms",
+        "name email avatar"
+    );
+
+    const dm = await User.findById(req.params.dmId).populate(
+        "dms",
+        "name email avatar"
+    );
+
+    if (dm && user) {
+        if (user.dms.some((x) => x._id.toString() === dm._id.toString())) {
+            user.dms = user.dms.filter((x) => {
+                if (x._id.toString() !== dm._id.toString()) {
+                    return x;
+                }
+            });
+            await user.save();
+        }
+
+        if (dm.dms.some((x) => x._id.toString() === user._id.toString())) {
+            dm.dms = dm.dms.filter((x) => {
+                if (x._id.toString() !== user._id.toString()) {
+                    return x;
+                }
+            });
+            await dm.save();
+        }
+    }
+
+    res.json({ message: "Success" });
+});
+
 // @desc:   Get all users except current user
 // @route:  GET /api/users/
 // @access: Private

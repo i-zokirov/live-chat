@@ -22,7 +22,12 @@ import socket from "../socket";
 
 // Redux stuff
 import { ADD_MESSAGE, LOAD_MESSAGES_RESET } from "../redux/constants/constants";
-import { getDMs, loadMessages, logoutUser } from "../redux/actions/actions";
+import {
+    getDMs,
+    loadMessages,
+    logoutUser,
+    deleteChatAction,
+} from "../redux/actions/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import EditProfile from "../components/EditProfile";
@@ -221,8 +226,12 @@ const Home = () => {
 
     // function to delete chat
     const deleteChat = (contact) => {
-        console.log("delete");
-        console.log(contact);
+        if (contact) {
+            dispatch(deleteChatAction(contact));
+            if (currentChat._id === contact._id) {
+                setCurrentChat(null);
+            }
+        }
     };
 
     // function to logout

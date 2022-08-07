@@ -21,6 +21,10 @@ import {
     ADD_CHAT_REQUEST,
     ADD_CHAT_SUCCESS,
     ADD_CHAT_RESET,
+    DELETE_CHAT_FAILURE,
+    DELETE_CHAT_REQUEST,
+    DELETE_CHAT_SUCCESS,
+    DELETE_CHAT_RESET,
     USER_LOGOUT,
     UPDATE_USER_RESET,
     LOADED_CHATS,
@@ -295,7 +299,6 @@ export const addChat = (user) => {
                 {},
                 config
             );
-            console.log(data);
             dispatch({
                 type: ADD_CHAT_SUCCESS,
                 payload: user,
@@ -321,6 +324,84 @@ export const addChat = (user) => {
                 dispatch(logoutUser());
             }
             dispatch({ type: ADD_CHAT_FAILURE, payload: err });
+            setTimeout(() => {
+                dispatch({ type: ADD_CHAT_RESET });
+            }, 5000);
+            dispatch(
+                dispatchNotification({
+                    type: "error",
+                    title: "Error",
+                    message: err,
+                })
+            );
+        }
+    };
+};
+
+export const deleteChatAction = (user) => {
+    return async (dispatch, getState) => {
+        try {
+            dispatch({ type: DELETE_CHAT_REQUEST });
+            const {
+                auth: { data: currentUser },
+            } = getState();
+
+            const {
+                contacts: { contactlist },
+            } = getState();
+
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${currentUser.token}`,
+                },
+            };
+            const { data } = await axios.delete(
+                `${baseUrl}/api/users/${currentUser._id}/dms/${user._id}`,
+
+                config
+            );
+            console.log(data);
+            dispatch({
+                type: DELETE_CHAT_SUCCESS,
+                payload: user,
+            });
+
+            if (contactlist.some((x) => x._id === user._id)) {
+                const filtered = contactlist.filter((x) => {
+                    if (x._id !== user._id) {
+                        return x;
+                    }
+                });
+                dispatch({
+                    type: GET_USER_CONTACTS_SUCCESS,
+                    payload: filtered,
+                });
+            }
+
+            dispatch(
+                dispatchNotification({
+                    type: "success",
+                    title: "Success",
+                    message: "Contact has been successfully deleted!",
+                })
+            );
+
+            setTimeout(() => {
+                dispatch({ type: DELETE_CHAT_RESET });
+            }, 5000);
+        } catch (error) {
+            const err =
+                error.response && error.response.data.message
+                    ? error.response.data.message
+                    : error.message;
+            console.log(err);
+            if (err === "jwt expired") {
+                dispatch(logoutUser());
+            }
+            dispatch({ type: DELETE_CHAT_FAILURE, payload: err });
+            setTimeout(() => {
+                dispatch({ type: DELETE_CHAT_RESET });
+            }, 5000);
             dispatch(
                 dispatchNotification({
                     type: "error",

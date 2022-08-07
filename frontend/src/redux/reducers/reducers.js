@@ -30,6 +30,10 @@ import {
     RESET_NOTIFICATION,
     ADD_CURRENT_CHAT,
     RESET_CURRENT_CHAT,
+    DELETE_CHAT_FAILURE,
+    DELETE_CHAT_REQUEST,
+    DELETE_CHAT_SUCCESS,
+    DELETE_CHAT_RESET,
 } from "../constants/constants";
 
 export const messagesReducer = (state = {}, action) => {
@@ -200,6 +204,29 @@ export const addChatReducer = (state = {}, action) => {
                 error: action.payload,
             };
         case ADD_CHAT_RESET:
+            return {};
+        default:
+            return state;
+    }
+};
+
+export const deleteChatReducer = (state = {}, action) => {
+    switch (action.type) {
+        case DELETE_CHAT_REQUEST:
+            return {
+                loading: true,
+            };
+        case DELETE_CHAT_SUCCESS:
+            return {
+                loading: false,
+                deletedChat: action.payload,
+            };
+        case DELETE_CHAT_FAILURE:
+            return {
+                loading: false,
+                error: action.payload,
+            };
+        case DELETE_CHAT_RESET:
             return {};
         default:
             return state;
