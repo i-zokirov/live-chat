@@ -27,6 +27,12 @@ const userSchema = mongoose.Schema(
                 ref: "User",
             },
         ],
+        archives: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
     },
     {
         timestamps: true,

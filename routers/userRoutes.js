@@ -1,9 +1,11 @@
 import express from "express";
 import {
     addDM,
+    archiveDM,
     authenticate,
     deleteDM,
     getAllUsers,
+    getArchives,
     getDMs,
     registerUser,
     updateUser,
@@ -21,9 +23,11 @@ router.get("/token", verifyToken);
 router.get("/", protect, getAllUsers);
 router.put("/:userId", protect, updateUser);
 router.get("/:userId/dms", protect, getDMs);
+router.get("/:userId/archives", protect, getArchives);
 router
     .route("/:userId/dms/:dmId")
     .put(protect, addDM)
-    .delete(protect, deleteDM);
+    .delete(protect, deleteDM)
+    .patch(protect, archiveDM);
 
 export default router;

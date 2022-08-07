@@ -27,17 +27,21 @@ import {
     loadMessages,
     logoutUser,
     deleteChatAction,
+    archiveChatAction,
+    getArchivedChats,
 } from "../redux/actions/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import EditProfile from "../components/EditProfile";
 import Notification from "../components/Notification";
+import searchContact from "../utils/contactSearchAlgorithm";
 
 const Home = () => {
     const [message, setMessage] = useState("");
     const [showEmoji, setShowEmoji] = useState(false);
-    const [status, setStatus] = useState("Offline");
-
+    const [status, setStatus] = useState("Available");
+    const [activeChats, setActiveChats] = useState([]);
+    const [archivedChatList, setArchivedChatList] = useState([]);
     const [currentChat, setCurrentChat] = useState(null);
     const [profileAnchor, setProfileAnchor] = useState(null);
     const [openEditProfile, setOpenEditProfile] = useState(false);
@@ -53,6 +57,10 @@ const Home = () => {
     );
     const { contactlist, loading, error } = useSelector(
         (state) => state.contacts
+    );
+
+    const { archivedChats, loading: archivedChatsLoading } = useSelector(
+        (state) => state.archived
     );
 
     const { newChat } = useSelector((state) => state.addChat);
@@ -79,6 +87,22 @@ const Home = () => {
             dispatch(getDMs());
         }
     }, []);
+
+    useEffect(() => {
+        if (currentWindow === "Archived Chats") {
+            if (!archivedChats && tokenVerified) {
+                dispatch(getArchivedChats());
+            }
+        }
+
+        if (archivedChats && archivedChats.length) {
+            setArchivedChatList(archivedChats);
+        }
+    }, [currentWindow, archivedChats]);
+
+    useEffect(() => {
+        setActiveChats(contactlist);
+    }, [contactlist]);
 
     useEffect(() => {
         socket.emit("connection", () => {
@@ -187,7 +211,6 @@ const Home = () => {
             date: new Date(),
         };
         socket.emit("message:create", callMessage, (res) => {
-            console.log(res);
             if (res.error) {
                 console.log(res.error);
             } else if (res.data) {
@@ -218,10 +241,19 @@ const Home = () => {
         setCurrentChat(contact);
     };
 
+    // search filter above active chats
+    const handleSearchFilter = (e) => {
+        if (currentWindow === "Chats") {
+            setActiveChats(searchContact(contactlist, e.target.value));
+        } else if (currentWindow === "Archived Chats") {
+            setArchivedChatList(searchContact(archivedChats, e.target.value));
+        }
+    };
+
     // function to archive chat
     const archiveChat = (contact) => {
         console.log("archive");
-        console.log(contact);
+        dispatch(archiveChatAction(contact));
     };
 
     // function to delete chat
@@ -331,17 +363,40 @@ const Home = () => {
                         <Box>
                             <Header title={currentWindow} />
 
-                            {currentWindow === "Chats" && (
+                            {currentWindow === "Chats" ? (
                                 <>
-                                    <Searchbar />
+                                    <Searchbar
+                                        handleChange={handleSearchFilter}
+                                    />
                                     <Chats
-                                        contactlist={contactlist}
+                                        contactlist={activeChats}
                                         currentChat={currentChat}
                                         handleCurrentChat={handleCurrentChat}
                                         deleteChat={deleteChat}
                                         archiveChat={archiveChat}
+                                        loading={loading}
+                                        useArchived={false}
                                     />
                                 </>
+                            ) : (
+                                currentWindow === "Archived Chats" && (
+                                    <>
+                                        <Searchbar
+                                            handleChange={handleSearchFilter}
+                                        />
+                                        <Chats
+                                            contactlist={archivedChatList}
+                                            currentChat={currentChat}
+                                            handleCurrentChat={
+                                                handleCurrentChat
+                                            }
+                                            deleteChat={deleteChat}
+                                            archiveChat={archiveChat}
+                                            loading={archivedChatsLoading}
+                                               useArchived={true}
+                                        />
+                                    </>
+                                )
                             )}
                         </Box>
                     </Grid>

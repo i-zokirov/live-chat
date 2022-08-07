@@ -10,12 +10,11 @@ import {
 import { Box } from "@mui/system";
 
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { useTheme } from "@mui/material/styles";
+
 import stringToColor from "../utils/stringToColor";
 import ActionMenu from "./ActionMenu";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useDispatch } from "react-redux";
 
 function stringAvatar(name) {
     return {
@@ -34,10 +33,10 @@ const ChatItem = ({
     handleClick,
     archiveChat,
     deleteChat,
+    useArchived,
 }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const openMenu = Boolean(anchorEl);
-    const dispatch = useDispatch();
 
     const handleOpenMenuClick = (e) => {
         setAnchorEl(e.currentTarget);
@@ -66,8 +65,6 @@ const ChatItem = ({
             action: deleteAction,
         },
     ];
-
-    const theme = useTheme();
 
     return (
         <>
@@ -124,7 +121,17 @@ const ChatItem = ({
             <ActionMenu
                 open={openMenu}
                 handleClose={handleClose}
-                items={menuItems}
+                items={
+                    useArchived
+                        ? [
+                              {
+                                  label: "Delete",
+                                  icon: <DeleteIcon />,
+                                  action: deleteAction,
+                              },
+                          ]
+                        : menuItems
+                }
                 anchorEl={anchorEl}
                 it={contact._id}
             />

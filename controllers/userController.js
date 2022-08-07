@@ -101,7 +101,28 @@ export const getDMs = expressAsyncHandler(async (req, res) => {
         "dms",
         "name email avatar"
     );
-    res.json(user.dms);
+    if (user) {
+        res.json(user.dms);
+    } else {
+        res.status(404);
+        throw new Error("User not found!");
+    }
+});
+
+// @desc:   get user Archives
+// @route:  GET /api/users/:userId/archives
+// @access: Private
+export const getArchives = expressAsyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.userId).populate(
+        "archives",
+        "name email avatar"
+    );
+    if (user) {
+        res.json(user.archives);
+    } else {
+        res.status(404);
+        throw new Error("User not found!");
+    }
 });
 
 // @desc:   add DM
@@ -128,9 +149,11 @@ export const addDM = expressAsyncHandler(async (req, res) => {
             dm.dms.push(user._id);
             await dm.save();
         }
+        res.json({ message: "Success" });
+    } else {
+        res.status(404);
+        throw new Error("User not found!");
     }
-
-    res.json({ message: "Success" });
 });
 
 // @desc:   delete DM
@@ -166,9 +189,47 @@ export const deleteDM = expressAsyncHandler(async (req, res) => {
             });
             await dm.save();
         }
+        res.json({ message: "Success" });
+    } else {
+        res.status(404);
+        throw new Error("User not found!");
     }
+});
 
-    res.json({ message: "Success" });
+// @desc:   archive DM
+// @route:  patch /api/users/:userId/dms/:dmId
+// @access: Private
+export const archiveDM = expressAsyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.userId).populate(
+        "dms",
+        "name email avatar"
+    );
+
+    const dm = await User.findById(req.params.dmId).populate(
+        "dms",
+        "name email avatar"
+    );
+
+    if (dm && user) {
+        if (user.dms.some((x) => x._id.toString() === dm._id.toString())) {
+            user.dms = user.dms.filter((x) => {
+                if (x._id.toString() !== dm._id.toString()) {
+                    return x;
+                }
+            });
+        }
+
+        if (
+            !user.archives.some((x) => x._id.toString() === dm._id.toString())
+        ) {
+            user.archives.push(dm._id);
+        }
+        await user.save();
+        res.json({ message: "Success" });
+    } else {
+        res.status(404);
+        throw new Error("User not found!");
+    }
 });
 
 // @desc:   Get all users except current user

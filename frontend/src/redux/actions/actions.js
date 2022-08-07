@@ -11,6 +11,9 @@ import {
     GET_USER_CONTACTS_FAILURE,
     GET_USER_CONTACTS_REQUEST,
     GET_USER_CONTACTS_SUCCESS,
+    GET_ARCHIVED_CHATS_FAILURE,
+    GET_ARCHIVED_CHATS_REQUEST,
+    GET_ARCHIVED_CHATS_SUCCESS,
     GET_ALL_USERS_FAILURE,
     GET_ALL_USERS_REQUEST,
     GET_ALL_USERS_SUCCESS,
@@ -25,6 +28,10 @@ import {
     DELETE_CHAT_REQUEST,
     DELETE_CHAT_SUCCESS,
     DELETE_CHAT_RESET,
+    ARCHIVE_CHAT_FAILURE,
+    ARCHIVE_CHAT_REQUEST,
+    ARCHIVE_CHAT_SUCCESS,
+    ARCHIVE_CHAT_RESET,
     USER_LOGOUT,
     UPDATE_USER_RESET,
     LOADED_CHATS,
@@ -176,6 +183,48 @@ export const getDMs = () => {
                 dispatch(logoutUser());
             }
             dispatch({ type: GET_USER_CONTACTS_FAILURE, payload: err });
+            dispatch(
+                dispatchNotification({
+                    type: "error",
+                    title: "Error",
+                    message: err,
+                })
+            );
+        }
+    };
+};
+
+export const getArchivedChats = () => {
+    return async (dispatch, getState) => {
+        try {
+            dispatch({ type: GET_ARCHIVED_CHATS_REQUEST });
+            const {
+                auth: { data: userData },
+            } = getState();
+
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${userData.token}`,
+                },
+            };
+            const { data } = await axios.get(
+                `${baseUrl}/api/users/${userData._id}/archives`,
+                config
+            );
+            console.log(data);
+            dispatch({
+                type: GET_ARCHIVED_CHATS_SUCCESS,
+                payload: data,
+            });
+        } catch (error) {
+            const err =
+                error.response && error.response.data.message
+                    ? error.response.data.message
+                    : error.message;
+            if (err === "jwt expired") {
+                dispatch(logoutUser());
+            }
+            dispatch({ type: GET_ARCHIVED_CHATS_FAILURE, payload: err });
             dispatch(
                 dispatchNotification({
                     type: "error",
@@ -401,6 +450,80 @@ export const deleteChatAction = (user) => {
             dispatch({ type: DELETE_CHAT_FAILURE, payload: err });
             setTimeout(() => {
                 dispatch({ type: DELETE_CHAT_RESET });
+            }, 5000);
+            dispatch(
+                dispatchNotification({
+                    type: "error",
+                    title: "Error",
+                    message: err,
+                })
+            );
+        }
+    };
+};
+export const archiveChatAction = (user) => {
+    return async (dispatch, getState) => {
+        try {
+            dispatch({ type: ARCHIVE_CHAT_REQUEST });
+            const {
+                auth: { data: currentUser },
+            } = getState();
+
+            const {
+                contacts: { contactlist },
+            } = getState();
+
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${currentUser.token}`,
+                },
+            };
+            const { data } = await axios.patch(
+                `${baseUrl}/api/users/${currentUser._id}/dms/${user._id}`,
+                {},
+                config
+            );
+            console.log(data);
+            dispatch({
+                type: ARCHIVE_CHAT_SUCCESS,
+                payload: user,
+            });
+
+            if (contactlist.some((x) => x._id === user._id)) {
+                const filtered = contactlist.filter((x) => {
+                    if (x._id !== user._id) {
+                        return x;
+                    }
+                });
+                dispatch({
+                    type: GET_USER_CONTACTS_SUCCESS,
+                    payload: filtered,
+                });
+            }
+
+            dispatch(
+                dispatchNotification({
+                    type: "success",
+                    title: "Success",
+                    message: "Contact has been successfully archived!",
+                })
+            );
+
+            setTimeout(() => {
+                dispatch({ type: ARCHIVE_CHAT_RESET });
+            }, 5000);
+        } catch (error) {
+            const err =
+                error.response && error.response.data.message
+                    ? error.response.data.message
+                    : error.message;
+            console.log(err);
+            if (err === "jwt expired") {
+                dispatch(logoutUser());
+            }
+            dispatch({ type: ARCHIVE_CHAT_FAILURE, payload: err });
+            setTimeout(() => {
+                dispatch({ type: ARCHIVE_CHAT_RESET });
             }, 5000);
             dispatch(
                 dispatchNotification({

@@ -39,7 +39,6 @@ const UsersModalWindow = ({ open, handleClose }) => {
     }, [userslist, dispatch]);
 
     const handleAddClick = (user) => {
-        console.log(user);
         dispatch(addChat(user));
         handleClose();
     };

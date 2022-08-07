@@ -6,6 +6,9 @@ import {
     GET_USER_CONTACTS_FAILURE,
     GET_USER_CONTACTS_REQUEST,
     GET_USER_CONTACTS_SUCCESS,
+    GET_ARCHIVED_CHATS_FAILURE,
+    GET_ARCHIVED_CHATS_REQUEST,
+    GET_ARCHIVED_CHATS_SUCCESS,
     GET_ALL_USERS_FAILURE,
     GET_ALL_USERS_REQUEST,
     GET_ALL_USERS_SUCCESS,
@@ -34,6 +37,10 @@ import {
     DELETE_CHAT_REQUEST,
     DELETE_CHAT_SUCCESS,
     DELETE_CHAT_RESET,
+    ARCHIVE_CHAT_FAILURE,
+    ARCHIVE_CHAT_REQUEST,
+    ARCHIVE_CHAT_SUCCESS,
+    ARCHIVE_CHAT_RESET,
 } from "../constants/constants";
 
 export const messagesReducer = (state = {}, action) => {
@@ -165,6 +172,26 @@ export const userContactsReducer = (state = {}, action) => {
             return state;
     }
 };
+export const archivedChatsReducer = (state = {}, action) => {
+    switch (action.type) {
+        case GET_ARCHIVED_CHATS_REQUEST:
+            return {
+                loading: true,
+            };
+        case GET_ARCHIVED_CHATS_SUCCESS:
+            return {
+                loading: false,
+                archivedChats: action.payload,
+            };
+        case GET_ARCHIVED_CHATS_FAILURE:
+            return {
+                loading: false,
+                error: action.payload,
+            };
+        default:
+            return state;
+    }
+};
 
 export const allUsersReducer = (state = {}, action) => {
     switch (action.type) {
@@ -227,6 +254,29 @@ export const deleteChatReducer = (state = {}, action) => {
                 error: action.payload,
             };
         case DELETE_CHAT_RESET:
+            return {};
+        default:
+            return state;
+    }
+};
+
+export const archiveChatReducer = (state = {}, action) => {
+    switch (action.type) {
+        case ARCHIVE_CHAT_REQUEST:
+            return {
+                loading: true,
+            };
+        case ARCHIVE_CHAT_SUCCESS:
+            return {
+                loading: false,
+                archivedChat: action.payload,
+            };
+        case ARCHIVE_CHAT_FAILURE:
+            return {
+                loading: false,
+                error: action.payload,
+            };
+        case ARCHIVE_CHAT_RESET:
             return {};
         default:
             return state;
