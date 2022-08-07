@@ -41,7 +41,10 @@ const Header = ({ title }) => {
                     <IconButton
                         sx={{ width: 60, height: 60, marginRight: "20px" }}
                     >
-                        <Tooltip title="Add Group chat" placement="bottom">
+                        <Tooltip
+                            title="Add Group chat (not implemented)"
+                            placement="bottom"
+                        >
                             <GroupAddIcon />
                         </Tooltip>
                     </IconButton>
