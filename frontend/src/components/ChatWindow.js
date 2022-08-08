@@ -4,7 +4,6 @@ import {
     IconButton,
     Tooltip,
     Typography,
-    Paper,
     TextField,
     Button,
 } from "@mui/material";
@@ -26,6 +25,8 @@ import ImageIcon from "@mui/icons-material/Image";
 import ActionMenu from "./ActionMenu";
 import BlockIcon from "@mui/icons-material/Block";
 import LinearProgress from "@mui/material/LinearProgress";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Message from "./Message";
 function stringAvatar(name) {
     return {
@@ -52,11 +53,12 @@ const ChatWindow = ({
     archiveChat,
     deleteChat,
     handleCall,
+    handleBackClick,
 }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const openMenu = Boolean(anchorEl);
     const bottomRef = useRef(null);
-
+    const mobileScreen = useMediaQuery("(max-width:900px)");
     const handleOpenMenuClick = (e) => {
         setAnchorEl(e.currentTarget);
     };
@@ -143,16 +145,25 @@ const ChatWindow = ({
                         display: "flex",
                         justifyContent: "flex-start",
                         alignItems: "center",
-                        width: "400px",
-                        marginLeft: "20px",
+                        width: "100%",
+                        marginLeft: mobileScreen ? "5px" : "20px",
                     }}
                 >
+                    {mobileScreen && (
+                        <IconButton
+                            onClick={handleBackClick}
+                            sx={{ width: 40, height: 40, marginRight: "5px" }}
+                        >
+                            <Tooltip title="Go back" placement="bottom">
+                                <ArrowBackIcon />
+                            </Tooltip>
+                        </IconButton>
+                    )}
                     {currentChat.avatar ? (
                         <Avatar
                             src={currentChat.avatar}
                             sx={{
                                 m: 1,
-
                                 height: 40,
                                 width: 40,
                             }}
@@ -176,12 +187,15 @@ const ChatWindow = ({
                         display: "flex",
                         justifyContent: "flex-end",
                         alignItems: "center",
-                        width: "400px",
-                        marginRight: "20px",
+                        width: "375px",
+                        marginRight: mobileScreen ? "5px" : "20px",
                     }}
                 >
                     <IconButton
-                        sx={{ width: 60, height: 60 }}
+                        sx={{
+                            width: mobileScreen ? 40 : 60,
+                            height: mobileScreen ? 40 : 60,
+                        }}
                         onClick={callVideo}
                     >
                         <Tooltip title="Video call" placement="bottom">
@@ -189,29 +203,41 @@ const ChatWindow = ({
                         </Tooltip>
                     </IconButton>
                     <IconButton
-                        sx={{ width: 60, height: 60 }}
+                        sx={{
+                            width: mobileScreen ? 40 : 60,
+                            height: mobileScreen ? 40 : 60,
+                        }}
                         onClick={callAudio}
                     >
                         <Tooltip title="Call" placement="bottom">
                             <CallIcon />
                         </Tooltip>
                     </IconButton>
-                    <Button
-                        size="small"
-                        variant="contained"
-                        startIcon={<MoreHorizIcon />}
-                        onClick={handleOpenMenuClick}
-                        sx={{ bgcolor: theme.palette.secondary.main }}
-                    >
-                        Actions
-                    </Button>
+
+                    {mobileScreen ? (
+                        <IconButton onClick={handleOpenMenuClick}>
+                            <Tooltip title="Actions" placement="bottom">
+                                <MoreHorizIcon />
+                            </Tooltip>
+                        </IconButton>
+                    ) : (
+                        <Button
+                            size="small"
+                            variant="contained"
+                            startIcon={<MoreHorizIcon />}
+                            onClick={handleOpenMenuClick}
+                            sx={{ bgcolor: theme.palette.secondary.main }}
+                        >
+                            Actions
+                        </Button>
+                    )}
                 </Box>
             </Box>
             {messagesLoading && <LinearProgress color="secondary" />}
 
             <Box
                 sx={{
-                    height: "75vh",
+                    height: mobileScreen ? "70vh" : "75vh",
                     bgcolor:
                         theme.palette.mode === "dark"
                             ? "#263238"
@@ -248,27 +274,30 @@ const ChatWindow = ({
                         display: "flex",
                         justifyContent: "space-evenly",
                         bgColor: theme.palette.grey[500],
-                        // borderBottom: "0.5px solid #bdbdbd",
                     }}
                 >
-                    <IconButton sx={{ width: 60, height: 60 }}>
-                        <Tooltip title="Attach file" placement="top">
-                            <AttachFileIcon
-                                sx={{
-                                    color: inputIconColor,
-                                }}
-                            />
-                        </Tooltip>
-                    </IconButton>
-                    <IconButton sx={{ width: 60, height: 60 }}>
-                        <Tooltip title="Upload image" placement="top">
-                            <ImageIcon
-                                sx={{
-                                    color: inputIconColor,
-                                }}
-                            />
-                        </Tooltip>
-                    </IconButton>
+                    {!mobileScreen && (
+                        <>
+                            <IconButton sx={{ width: 60, height: 60 }}>
+                                <Tooltip title="Attach file" placement="top">
+                                    <AttachFileIcon
+                                        sx={{
+                                            color: inputIconColor,
+                                        }}
+                                    />
+                                </Tooltip>
+                            </IconButton>
+                            <IconButton sx={{ width: 60, height: 60 }}>
+                                <Tooltip title="Upload image" placement="top">
+                                    <ImageIcon
+                                        sx={{
+                                            color: inputIconColor,
+                                        }}
+                                    />
+                                </Tooltip>
+                            </IconButton>
+                        </>
+                    )}
                     <TextField
                         placeholder="Start typing ..."
                         variant="outlined"

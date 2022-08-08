@@ -6,6 +6,7 @@ import { useTheme } from "@mui/material/styles";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import LogoutIcon from "@mui/icons-material/Logout";
 import FaceIcon from "@mui/icons-material/Face";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 // CUSTOM COMPONENTS
 import Header from "../components/Header";
@@ -18,7 +19,8 @@ import Logo from "../components/Logo";
 import MyStatus from "../components/MyStatus";
 import ActionMenu from "../components/ActionMenu";
 import Searchbar from "../components/Searchbar";
-import socket from "../socket";
+import EditProfile from "../components/EditProfile";
+import Notification from "../components/Notification";
 
 // Redux stuff
 import { ADD_MESSAGE, LOAD_MESSAGES_RESET } from "../redux/constants/constants";
@@ -32,9 +34,12 @@ import {
 } from "../redux/actions/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import EditProfile from "../components/EditProfile";
-import Notification from "../components/Notification";
+
+import socket from "../socket";
 import searchContact from "../utils/contactSearchAlgorithm";
+import Drawer from "../components/Drawer";
+import SideBarMenu from "../components/SideBarMenu";
+import MobileAppBar from "../components/MobileAppBar";
 
 const Home = () => {
     const [message, setMessage] = useState("");
@@ -46,18 +51,19 @@ const Home = () => {
     const [profileAnchor, setProfileAnchor] = useState(null);
     const [openEditProfile, setOpenEditProfile] = useState(false);
     const [currentWindow, setCurrentWindow] = useState("Chats");
-
+    const [openSideMenu, setOpenSideMenu] = useState(true);
     const openProfileMenu = Boolean(profileAnchor);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const theme = useTheme();
+
+    const mobileScreen = useMediaQuery("(max-width:900px)");
+
     const { tokenVerified, data: currentUserData } = useSelector(
         (state) => state.auth
     );
-    const { contactlist, loading, error } = useSelector(
-        (state) => state.contacts
-    );
+    const { contactlist, loading } = useSelector((state) => state.contacts);
 
     const { archivedChats, loading: archivedChatsLoading } = useSelector(
         (state) => state.archived
@@ -199,7 +205,6 @@ const Home = () => {
     };
 
     const handleCall = (callType) => {
-        console.log("emiting call message");
         const callMessage = {
             to: currentChat._id,
             from: currentUserData._id,
@@ -254,6 +259,7 @@ const Home = () => {
     const archiveChat = (contact) => {
         console.log("archive");
         dispatch(archiveChatAction(contact));
+        setCurrentChat(null);
     };
 
     // function to delete chat
@@ -264,6 +270,10 @@ const Home = () => {
                 setCurrentChat(null);
             }
         }
+    };
+
+    const handleBackClick = () => {
+        setCurrentChat(null);
     };
 
     // function to logout
@@ -305,6 +315,17 @@ const Home = () => {
         navigate("/choose-avatar");
     };
 
+    const toggleSideMenu = (event) => {
+        if (
+            event.type === "keydown" &&
+            (event.key === "Tab" || event.key === "Shift")
+        ) {
+            return;
+        }
+
+        setOpenSideMenu((prev) => !prev);
+    };
+
     const profileMenuItems = [
         {
             label: "Set Avatar",
@@ -332,33 +353,64 @@ const Home = () => {
                     overflow: "hidden",
                 }}
             >
-                <Grid container spacing={0}>
-                    <Grid
-                        item
-                        xs={0.8}
-                        sx={{ borderRight: "0.5px solid #bdbdbd" }}
-                    >
-                        <Logo />
-                        <AppBarItems
+                {mobileScreen && (
+                    <>
+                        <MobileAppBar
+                            toggleSideMenu={toggleSideMenu}
                             handleAppBarClick={handleAppBarClick}
-                            handleLogout={handleLogout}
                             currentWindow={currentWindow}
                             selectedColor={
                                 theme.palette.mode === "light"
-                                    ? theme.palette.primary.main
-                                    : theme.palette.secondary.main
+                                    ? theme.palette.secondary.main
+                                    : theme.palette.primary.main
                             }
                         />
-
-                        <User
-                            handleProfileMenuView={handleProfileMenuView}
+                        <SideBarMenu
+                            toggleSideMenu={toggleSideMenu}
+                            openSideMenu={openSideMenu}
                             currentUserData={currentUserData}
+                            profileMenuItems={profileMenuItems}
+                            status={status}
+                            setStatus={setStatus}
                         />
-                    </Grid>
+                    </>
+                )}
+                <Grid container spacing={0}>
+                    {!mobileScreen && (
+                        <Grid
+                            item
+                            lg={0.8}
+                            md={0.8}
+                            sx={{ borderRight: "0.5px solid #bdbdbd" }}
+                        >
+                            <Logo />
+                            <AppBarItems
+                                handleAppBarClick={handleAppBarClick}
+                                handleLogout={handleLogout}
+                                currentWindow={currentWindow}
+                                selectedColor={
+                                    theme.palette.mode === "light"
+                                        ? theme.palette.primary.main
+                                        : theme.palette.secondary.main
+                                }
+                            />
+
+                            <User
+                                handleProfileMenuView={handleProfileMenuView}
+                                currentUserData={currentUserData}
+                            />
+                        </Grid>
+                    )}
+
                     <Grid
                         item
-                        xs={2.7}
-                        sx={{ borderRight: "0.5px solid #bdbdbd" }}
+                        xs={12}
+                        md={5.2}
+                        lg={2.5}
+                        sx={{
+                            borderRight: "0.5px solid #bdbdbd",
+                            display: mobileScreen && currentChat ? "none" : "",
+                        }}
                     >
                         <Box>
                             <Header title={currentWindow} />
@@ -393,7 +445,7 @@ const Home = () => {
                                             deleteChat={deleteChat}
                                             archiveChat={archiveChat}
                                             loading={archivedChatsLoading}
-                                               useArchived={true}
+                                            useArchived={true}
                                         />
                                     </>
                                 )
@@ -403,7 +455,9 @@ const Home = () => {
 
                     <Grid
                         item
-                        xs={6}
+                        xs={12}
+                        md={6}
+                        lg={6.2}
                         sx={{
                             borderRight: "0.5px solid #bdbdbd",
                             margin: 0,
@@ -424,17 +478,20 @@ const Home = () => {
                                 setShowEmoji={setShowEmoji}
                                 deleteChat={deleteChat}
                                 archiveChat={archiveChat}
+                                handleBackClick={handleBackClick}
                             />
                         )}
                     </Grid>
 
-                    <Grid item xs={2.5}>
-                        <MyStatus status={status} setStatus={setStatus} />
+                    {!mobileScreen && (
+                        <Grid item md={2.5} lg={2.5}>
+                            <MyStatus status={status} setStatus={setStatus} />
 
-                        {currentChat && (
-                            <ChatProfile currentChat={currentChat} />
-                        )}
-                    </Grid>
+                            {currentChat && (
+                                <ChatProfile currentChat={currentChat} />
+                            )}
+                        </Grid>
+                    )}
                 </Grid>
                 <ActionMenu
                     items={profileMenuItems}

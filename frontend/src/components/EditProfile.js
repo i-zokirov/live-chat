@@ -1,10 +1,17 @@
-import { Typography, Box, TextField, Button } from "@mui/material";
+import {
+    Typography,
+    Box,
+    TextField,
+    Button,
+    IconButton,
+    Tooltip,
+} from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { updateUser } from "../redux/actions/actions";
 import TransitionModal from "./TransitionModal";
-
+import CloseIcon from "@mui/icons-material/Close";
 const EditProfile = ({ open, handleClose, user }) => {
     const [name, setName] = useState(user.name);
     const [email, setEmail] = useState(user.email);
@@ -54,11 +61,22 @@ const EditProfile = ({ open, handleClose, user }) => {
                     height: "100%",
                     margin: 0,
                     padding: 0,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                 }}
             >
-                <Typography variant="h6" sx={{ p: 2, color: "white" }}>
+                <Typography variant="h6" sx={{ p: 3, color: "white" }}>
                     Edit Profile
                 </Typography>
+                <IconButton
+                    onClick={handleClose}
+                    sx={{ color: "white", padding: 3 }}
+                >
+                    <Tooltip title="Exit" placement="top">
+                        <CloseIcon />
+                    </Tooltip>
+                </IconButton>
             </Box>
             <Box
                 sx={{

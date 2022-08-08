@@ -15,7 +15,7 @@ import { addChat, getAllUsers } from "../redux/actions/actions";
 import Searchbar from "./Searchbar";
 import TransitionModal from "./TransitionModal";
 import stringToColor from "../utils/stringToColor";
-
+import CloseIcon from "@mui/icons-material/Close";
 import AddCommentIcon from "@mui/icons-material/AddComment";
 import { useTheme } from "@emotion/react";
 function stringAvatar(name) {
@@ -55,20 +55,31 @@ const UsersModalWindow = ({ open, handleClose }) => {
                     height: "100%",
                     margin: 0,
                     padding: 0,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                 }}
             >
-                <Typography sx={{ color: "white", p: 2 }} variant="h6">
+                <Typography sx={{ color: "white", padding: 3 }} variant="h6">
                     Contacts:
                 </Typography>
+                <IconButton
+                    onClick={handleClose}
+                    sx={{ color: "white", padding: 3 }}
+                >
+                    <Tooltip title="Exit" placement="top">
+                        <CloseIcon />
+                    </Tooltip>
+                </IconButton>
             </Box>
-            <Box sx={{ p: 2 }}>
+            <Box sx={{ p: 1 }}>
                 <Searchbar />
             </Box>
             <Divider />
             <br />
             <Box
                 sx={{
-                    height: "30vh",
+                    height: "40vh",
                     overflowY: "scroll",
                     p: 1,
                 }}

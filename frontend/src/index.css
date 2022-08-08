@@ -21,9 +21,9 @@
 }
 
 /* Remove extra left and right margins, due to padding in columns */
-/* .row {
-    margin: 0 -5px;
-} */
+.row {
+    margin-left: 30px;
+}
 
 /* Clear floats after the columns */
 .row:after {
@@ -40,9 +40,17 @@
 }
 
 /* Responsive columns - one column layout (vertical) on small screens */
+@media screen and (max-width: 900px) {
+    .column {
+        width: 50%;
+        display: block;
+        margin-bottom: 20px;
+    }
+}
+
 @media screen and (max-width: 600px) {
     .column {
-        width: 100%;
+        width: 30%;
         display: block;
         margin-bottom: 20px;
     }

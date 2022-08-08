@@ -332,9 +332,7 @@ export const addChat = (user) => {
             dispatch({ type: ADD_CHAT_REQUEST });
             const {
                 auth: { data: currentUser },
-            } = getState();
-
-            const {
+                archived: { archivedChats },
                 contacts: { contactlist },
             } = getState();
 
@@ -359,6 +357,19 @@ export const addChat = (user) => {
                     payload: [...contactlist, user],
                 });
             }
+
+            if (archivedChats && archivedChats.length)
+                if (archivedChats.some((x) => x._id === user._id)) {
+                    console.log("Removing user from archive");
+                    const filtered = archivedChats.filter((x) =>
+                        x._id !== user._id ? x : ""
+                    );
+                    console.log(filtered);
+                    dispatch({
+                        type: GET_ARCHIVED_CHATS_SUCCESS,
+                        payload: filtered,
+                    });
+                }
 
             setTimeout(() => {
                 dispatch({ type: ADD_CHAT_RESET });
@@ -393,10 +404,8 @@ export const deleteChatAction = (user) => {
             dispatch({ type: DELETE_CHAT_REQUEST });
             const {
                 auth: { data: currentUser },
-            } = getState();
-
-            const {
                 contacts: { contactlist },
+                archived: { archivedChats },
             } = getState();
 
             const config = {
@@ -426,6 +435,17 @@ export const deleteChatAction = (user) => {
                     payload: filtered,
                 });
             }
+
+            if (archivedChats && archivedChats.length)
+                if (archivedChats.some((x) => x._id === user._id)) {
+                    const filtered = archivedChats.filter((x) =>
+                        x._id !== user._id ? x : ""
+                    );
+                    dispatch({
+                        type: GET_ARCHIVED_CHATS_SUCCESS,
+                        payload: filtered,
+                    });
+                }
 
             dispatch(
                 dispatchNotification({
@@ -467,10 +487,8 @@ export const archiveChatAction = (user) => {
             dispatch({ type: ARCHIVE_CHAT_REQUEST });
             const {
                 auth: { data: currentUser },
-            } = getState();
-
-            const {
                 contacts: { contactlist },
+                archived: { archivedChats },
             } = getState();
 
             const config = {
@@ -498,6 +516,20 @@ export const archiveChatAction = (user) => {
                 dispatch({
                     type: GET_USER_CONTACTS_SUCCESS,
                     payload: filtered,
+                });
+            }
+
+            if (archivedChats && archivedChats.length) {
+                if (!archivedChats.some((x) => x._id === user._id)) {
+                    dispatch({
+                        type: GET_ARCHIVED_CHATS_SUCCESS,
+                        payload: [...archivedChats, user],
+                    });
+                }
+            } else {
+                dispatch({
+                    type: GET_ARCHIVED_CHATS_SUCCESS,
+                    payload: [user],
                 });
             }
 

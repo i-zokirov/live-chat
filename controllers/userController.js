@@ -129,21 +129,26 @@ export const getArchives = expressAsyncHandler(async (req, res) => {
 // @route:  put /api/users/:userId/dms/:dmId
 // @access: Private
 export const addDM = expressAsyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.userId).populate(
-        "dms",
-        "name email avatar"
-    );
+    const user = await User.findById(req.params.userId)
+        .populate("dms", "name email avatar")
+        .populate("archives", "name email avatar");
 
-    const dm = await User.findById(req.params.dmId).populate(
-        "dms",
-        "name email avatar"
-    );
+    const dm = await User.findById(req.params.dmId)
+        .populate("dms", "name email avatar")
+        .populate("archives", "name email avatar");
 
     if (dm && user) {
         if (!user.dms.some((x) => x._id.toString() === dm._id.toString())) {
             user.dms.push(dm._id);
-            await user.save();
         }
+        if (user.archives.some((x) => x._id.toString() === dm._id.toString())) {
+            user.archives = user.archives.filter((x) => {
+                if (x._id.toString() !== dm._id.toString()) {
+                    return x;
+                }
+            });
+        }
+        await user.save();
 
         if (!dm.dms.some((x) => x._id.toString() === user._id.toString())) {
             dm.dms.push(user._id);
@@ -161,15 +166,13 @@ export const addDM = expressAsyncHandler(async (req, res) => {
 // @access: Private
 export const deleteDM = expressAsyncHandler(async (req, res) => {
     console.log(`DELETE DM Request`);
-    const user = await User.findById(req.params.userId).populate(
-        "dms",
-        "name email avatar"
-    );
+    const user = await User.findById(req.params.userId)
+        .populate("dms", "name email avatar")
+        .populate("archives", "name email avatar");
 
-    const dm = await User.findById(req.params.dmId).populate(
-        "dms",
-        "name email avatar"
-    );
+    const dm = await User.findById(req.params.dmId)
+        .populate("dms", "name email avatar")
+        .populate("archives", "name email avatar");
 
     if (dm && user) {
         if (user.dms.some((x) => x._id.toString() === dm._id.toString())) {
@@ -178,8 +181,16 @@ export const deleteDM = expressAsyncHandler(async (req, res) => {
                     return x;
                 }
             });
-            await user.save();
         }
+
+        if (user.archives.some((x) => x._id.toString() === dm._id.toString())) {
+            user.archives = user.archives.filter((x) => {
+                if (x._id.toString() !== dm._id.toString()) {
+                    return x;
+                }
+            });
+        }
+        await user.save();
 
         if (dm.dms.some((x) => x._id.toString() === user._id.toString())) {
             dm.dms = dm.dms.filter((x) => {
@@ -187,8 +198,15 @@ export const deleteDM = expressAsyncHandler(async (req, res) => {
                     return x;
                 }
             });
-            await dm.save();
         }
+        if (dm.archives.some((x) => x._id.toString() === user._id.toString())) {
+            dm.archives = dm.archives.filter((x) => {
+                if (x._id.toString() !== user._id.toString()) {
+                    return x;
+                }
+            });
+        }
+        await dm.save();
         res.json({ message: "Success" });
     } else {
         res.status(404);
@@ -200,15 +218,12 @@ export const deleteDM = expressAsyncHandler(async (req, res) => {
 // @route:  patch /api/users/:userId/dms/:dmId
 // @access: Private
 export const archiveDM = expressAsyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.userId).populate(
-        "dms",
-        "name email avatar"
-    );
-
-    const dm = await User.findById(req.params.dmId).populate(
-        "dms",
-        "name email avatar"
-    );
+    const user = await User.findById(req.params.userId)
+        .populate("dms", "name email avatar")
+        .populate("archives", "name email avatar");
+    const dm = await User.findById(req.params.dmId)
+        .populate("dms", "name email avatar")
+        .populate("archives", "name email avatar");
 
     if (dm && user) {
         if (user.dms.some((x) => x._id.toString() === dm._id.toString())) {

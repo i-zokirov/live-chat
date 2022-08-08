@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Box, IconButton, Tooltip, Typography } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import ToggleColorMode from "./ToggleColorMode";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
+
 import UsersModalWindow from "./UsersModalWindow";
+
 const Header = ({ title }) => {
     const [open, setOpen] = useState(false);
 
