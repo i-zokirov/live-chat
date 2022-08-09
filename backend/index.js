@@ -6,14 +6,12 @@ import connectDB from "./config/connectMongoDB.js";
 import { notFound, errorHandler } from "./middleware/errorHandlers.js";
 import userRoutes from "./routers/userRoutes.js";
 import messageRoutes from "./routers/messageRoutes.js";
-
-import dotenv from "dotenv";
 import {
     handleMessage,
     fetchVideoChatData,
 } from "./controllers/socket/messageController.js";
-
-dotenv.config();
+// import dotenv from "dotenv";
+// dotenv.config();
 
 connectDB();
 
