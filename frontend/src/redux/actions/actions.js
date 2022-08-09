@@ -82,6 +82,7 @@ export const registerUser = (reqbody) => {
             dispatch({ type: REGISTER_USER_SUCCESS, payload: data });
             dispatch({ type: AUTHENTICATE_USER_SUCCESS, payload: data });
         } catch (error) {
+            console.log(error);
             const err =
                 error.response && error.response.data.message
                     ? error.response.data.message
