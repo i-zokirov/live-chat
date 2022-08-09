@@ -2,7 +2,6 @@ import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
-import { v4 as uuidv4 } from "uuid";
 import connectDB from "./config/connectMongoDB.js";
 import { notFound, errorHandler } from "./middleware/errorHandlers.js";
 import userRoutes from "./routers/userRoutes.js";

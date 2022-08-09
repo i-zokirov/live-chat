@@ -1,12 +1,15 @@
 {
     "name": "react-webchat",
     "version": "1.0.0",
-    "description": "",
+    "description": "Web-based text and video chat application build using React & Redux, Nodejs & Express, Socket.io, MongoDB, Peer.js",
     "main": "index.js",
     "type": "module",
     "scripts": {
-        "start": "node index.js",
-        "server": "nodemon index.js"
+        "start": "node backend/index.js",
+        "server": "nodemon backend/index.js",
+        "client": "npm start --prefix frontend",
+        "dev": "concurrently \"npm run server\" \"npm run client\"",
+        "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend"
     },
     "author": "Ikboljon Zokirov",
     "license": "ISC",
@@ -21,6 +24,7 @@
         "uuid": "^8.3.2"
     },
     "devDependencies": {
+        "concurrently": "^7.3.0",
         "dotenv": "^16.0.1",
         "nodemon": "^2.0.19"
     }
