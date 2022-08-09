@@ -1,4 +1,4 @@
-import Message from "../../mongoose-data-models/MessageModel.js";
+import Message from "../../mongoose-data-models/messageModel.js";
 import expressAsyncHandler from "express-async-handler";
 
 // @desc:   save message

@@ -1,4 +1,4 @@
-import Message from "../../mongoose-data-models/MessageModel.js";
+import Message from "../../mongoose-data-models/messageModel.js";
 import User from "../../mongoose-data-models/userModel.js";
 
 export const handleMessage = async function (payload, callback) {
