@@ -12,8 +12,10 @@ import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import React, { useState, useEffect } from "react";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Link as Router, useNavigate, useLocation } from "react-router-dom";
+import { useTheme } from "@mui/material/styles";
 import { useDispatch, useSelector } from "react-redux";
 import { authenticateUser } from "../redux/actions/actions";
+
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -33,6 +35,7 @@ const Login = () => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const theme = useTheme();
     const location = useLocation();
 
     const { loading, error, data, tokenVerified } = useSelector(
@@ -143,7 +146,16 @@ const Login = () => {
                     </Box>
                     <Typography variant="caption">
                         No account ?{" "}
-                        <Link to="/signup" as={Router}>
+                        <Link
+                            to="/signup"
+                            as={Router}
+                            sx={
+                                theme.palette.mode === "dark" && {
+                                    color: "white",
+                                    textDecoration: "underline",
+                                }
+                            }
+                        >
                             Register here
                         </Link>
                     </Typography>

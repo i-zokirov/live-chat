@@ -5,12 +5,13 @@ import {
     Paper,
     TextField,
     Alert,
+    Link,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
-
+import { useTheme } from "@mui/material/styles";
 import React, { useEffect, useState } from "react";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { Link, useNavigate } from "react-router-dom";
+import { Link as Router, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import { registerUser } from "../redux/actions/actions";
@@ -37,6 +38,7 @@ const Register = () => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const theme = useTheme();
     const { loading, error } = useSelector((state) => state.register);
     const { data } = useSelector((state) => state.auth);
 
@@ -154,7 +156,18 @@ const Register = () => {
                     </Box>
                     <Typography variant="caption">
                         Already have an account ?{" "}
-                        <Link to="/signin">Sign in here</Link>
+                        <Link
+                            as={Router}
+                            to="/signin"
+                            sx={
+                                theme.palette.mode === "dark" && {
+                                    color: "white",
+                                    textDecoration: "underline",
+                                }
+                            }
+                        >
+                            Sign in here
+                        </Link>
                     </Typography>
                 </Box>
             </Paper>
