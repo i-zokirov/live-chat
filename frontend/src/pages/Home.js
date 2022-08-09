@@ -40,6 +40,7 @@ import searchContact from "../utils/contactSearchAlgorithm";
 import Drawer from "../components/Drawer";
 import SideBarMenu from "../components/SideBarMenu";
 import MobileAppBar from "../components/MobileAppBar";
+import HomePlaceHolder from "../components/HomePlaceHolder";
 
 const Home = () => {
     const [message, setMessage] = useState("");
@@ -51,7 +52,7 @@ const Home = () => {
     const [profileAnchor, setProfileAnchor] = useState(null);
     const [openEditProfile, setOpenEditProfile] = useState(false);
     const [currentWindow, setCurrentWindow] = useState("Chats");
-    const [openSideMenu, setOpenSideMenu] = useState(true);
+    const [openSideMenu, setOpenSideMenu] = useState(false);
     const openProfileMenu = Boolean(profileAnchor);
 
     const dispatch = useDispatch();
@@ -464,7 +465,7 @@ const Home = () => {
                             padding: 0,
                         }}
                     >
-                        {currentChat && (
+                        {currentChat ? (
                             <ChatWindow
                                 handleCall={handleCall}
                                 currentChat={currentChat}
@@ -480,6 +481,8 @@ const Home = () => {
                                 archiveChat={archiveChat}
                                 handleBackClick={handleBackClick}
                             />
+                        ) : (
+                            !mobileScreen && <HomePlaceHolder />
                         )}
                     </Grid>
 

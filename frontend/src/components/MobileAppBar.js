@@ -1,35 +1,28 @@
 import { Box, IconButton, Tooltip } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import ForumIcon from "@mui/icons-material/Forum";
 import GroupIcon from "@mui/icons-material/Group";
 import ArchiveIcon from "@mui/icons-material/Archive";
-
-import { useTheme } from "@mui/material/styles";
-const MobileAppBar = ({
-    handleAppBarClick,
-    currentWindow,
-    selectedColor,
-    toggleSideMenu,
-}) => {
-    const theme = useTheme();
+import { BiMessageDots } from "react-icons/bi";
+const MobileAppBar = ({ handleAppBarClick, currentWindow, toggleSideMenu }) => {
     const appBarIcons = [
         {
             title: "Chats",
             name: "Chats",
-            icon: <ForumIcon />,
+            icon: <ForumIcon sx={{ color: "white" }} />,
             action: handleAppBarClick,
         },
         {
             title: "Groups",
             name: "Groups",
-            icon: <GroupIcon />,
+            icon: <GroupIcon sx={{ color: "white" }} />,
             action: handleAppBarClick,
         },
         {
             title: "Archived Chats",
             name: "Archived Chats",
-            icon: <ArchiveIcon />,
+            icon: <ArchiveIcon sx={{ color: "white" }} />,
             action: handleAppBarClick,
         },
     ];
@@ -40,8 +33,8 @@ const MobileAppBar = ({
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                bgcolor: theme.palette.primary.main,
-                height: "8vh",
+                bgcolor: "#1565c0",
+                height: "9vh",
                 padding: "25px",
             }}
         >
@@ -62,25 +55,26 @@ const MobileAppBar = ({
                     edge="start"
                     color="inherit"
                     aria-label="menu"
-                    sx={{ mr: 2 }}
+                    sx={{
+                        mr: 2,
+                    }}
                     key={index}
                     onClick={item.action}
                     name={item.name}
                 >
-                    <Tooltip
-                        title={item.title}
-                        sx={{
-                            color:
-                                currentWindow === item.title
-                                    ? theme.palette.secondary.main
-                                    : "white",
-                        }}
-                        placement="bottom"
-                    >
+                    <Tooltip title={item.title} placement="bottom">
                         {item.icon}
                     </Tooltip>
                 </IconButton>
             ))}
+
+            <BiMessageDots
+                style={{
+                    width: "30px",
+                    height: "30px",
+                    color: "white",
+                }}
+            />
         </Box>
     );
 };
