@@ -1,6 +1,7 @@
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
+import path from "path";
 import cors from "cors";
 import connectDB from "./config/connectMongoDB.js";
 import { notFound, errorHandler } from "./middleware/errorHandlers.js";
@@ -48,6 +49,19 @@ io.on("connection", (socket) => {
 app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
 
+if (process.env.NODE_ENV === "production") {
+    const __dirname = path.resolve();
+    app.use(express.static(path.join(__dirname, "/frontend/build")));
+    app.get("*", (req, res) => {
+        res.sendFile(
+            path.resolve(__dirname, "frontend", "build", "index.html")
+        );
+    });
+} else {
+    app.get("/", (req, res) => {
+        res.send("API is running!");
+    });
+}
 // ERROR HANDLERS
 app.use(notFound);
 app.use(errorHandler);
