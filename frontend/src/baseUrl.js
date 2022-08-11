@@ -1,3 +1,3 @@
 const devUrl = "http://localhost:5000";
 const prodUrl = "";
-export default prodUrl;
+export default devUrl;

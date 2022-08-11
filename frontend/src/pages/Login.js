@@ -150,10 +150,12 @@ const Login = () => {
                             to="/signup"
                             as={Router}
                             sx={
-                                theme.palette.mode === "dark" && {
-                                    color: "white",
-                                    textDecoration: "underline",
-                                }
+                                theme.palette.mode === "dark"
+                                    ? {
+                                          color: "white",
+                                          textDecoration: "underline",
+                                      }
+                                    : {}
                             }
                         >
                             Register here

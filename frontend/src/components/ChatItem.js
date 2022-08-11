@@ -8,7 +8,7 @@ import {
     Divider,
 } from "@mui/material";
 import { Box } from "@mui/system";
-
+import useMediaQuery from "@mui/material/useMediaQuery";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
 import stringToColor from "../utils/stringToColor";
@@ -37,7 +37,7 @@ const ChatItem = ({
 }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const openMenu = Boolean(anchorEl);
-
+    const mobileScreen = useMediaQuery("(max-width:900px)");
     const handleOpenMenuClick = (e) => {
         setAnchorEl(e.currentTarget);
     };
@@ -109,32 +109,37 @@ const ChatItem = ({
                         </Typography>
                     </Box>
                 </CardActionArea>
-                <Box>
-                    <IconButton onClick={handleOpenMenuClick}>
-                        <MoreHorizIcon
-                            sx={{ color: selected ? "black" : "" }}
-                        />
-                    </IconButton>
-                </Box>
+                {!mobileScreen && (
+                    <Box>
+                        <IconButton onClick={handleOpenMenuClick}>
+                            <MoreHorizIcon
+                                sx={{ color: selected ? "black" : "" }}
+                            />
+                        </IconButton>
+                    </Box>
+                )}
             </Card>
             <Divider />
-            <ActionMenu
-                open={openMenu}
-                handleClose={handleClose}
-                items={
-                    useArchived
-                        ? [
-                              {
-                                  label: "Delete",
-                                  icon: <DeleteIcon />,
-                                  action: deleteAction,
-                              },
-                          ]
-                        : menuItems
-                }
-                anchorEl={anchorEl}
-                it={contact._id}
-            />
+
+            {!mobileScreen && (
+                <ActionMenu
+                    open={openMenu}
+                    handleClose={handleClose}
+                    items={
+                        useArchived
+                            ? [
+                                  {
+                                      label: "Delete",
+                                      icon: <DeleteIcon />,
+                                      action: deleteAction,
+                                  },
+                              ]
+                            : menuItems
+                    }
+                    anchorEl={anchorEl}
+                    it={contact._id}
+                />
+            )}
         </>
     );
 };

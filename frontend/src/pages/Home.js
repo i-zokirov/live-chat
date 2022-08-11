@@ -23,21 +23,22 @@ import EditProfile from "../components/EditProfile";
 import Notification from "../components/Notification";
 
 // Redux stuff
-import { ADD_MESSAGE, LOAD_MESSAGES_RESET } from "../redux/constants/constants";
+import { ADD_MESSAGE } from "../redux/constants/constants";
 import {
     getDMs,
-    loadMessages,
     logoutUser,
     deleteChatAction,
     archiveChatAction,
     getArchivedChats,
+    loadMessagesWS,
+    sendMessageWS,
 } from "../redux/actions/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import socket from "../socket";
 import searchContact from "../utils/contactSearchAlgorithm";
-import Drawer from "../components/Drawer";
+
 import SideBarMenu from "../components/SideBarMenu";
 import MobileAppBar from "../components/MobileAppBar";
 import HomePlaceHolder from "../components/HomePlaceHolder";
@@ -71,23 +72,7 @@ const Home = () => {
     );
 
     const { newChat } = useSelector((state) => state.addChat);
-    const { messages } = useSelector((state) => state.loadMessages);
     const loadedChats = useSelector((state) => state.loadedChats);
-    useEffect(() => {
-        if (messages && messages.length) {
-            dispatch({
-                type: ADD_MESSAGE,
-                payload: {
-                    chatId: currentChat._id,
-                    messageData: messages,
-                },
-            });
-
-            dispatch({
-                type: LOAD_MESSAGES_RESET,
-            });
-        }
-    }, [messages]);
 
     useEffect(() => {
         if (!contactlist && tokenVerified) {
@@ -148,7 +133,7 @@ const Home = () => {
 
     useEffect(() => {
         if (currentChat && !loadedChats.includes(currentChat._id)) {
-            dispatch(loadMessages(currentChat._id));
+            dispatch(loadMessagesWS(currentChat._id));
         }
     }, [currentChat]);
 
@@ -168,77 +153,14 @@ const Home = () => {
 
     // sends message and dispatchs it for corresponding window
     const handleSendMessage = () => {
-        socket.emit(
-            "message:create",
-            {
-                to: currentChat._id,
-                from: currentUserData._id,
-                senderName: currentUserData.name,
-                message,
-                type: "Text",
-                senderSocketId: socket.id,
-                date: new Date(),
-            },
-            (res) => {
-                if ("error" in res) {
-                    console.log(res);
-                } else {
-                    const newmessage = {
-                        chatId: currentChat._id,
-                        messageData: [
-                            {
-                                type: "Text",
-                                message: message,
-                                party: "sender",
-                                senderName: currentUserData.name,
-                                date: new Date(),
-                            },
-                        ],
-                    };
-                    dispatch({
-                        type: ADD_MESSAGE,
-                        payload: newmessage,
-                    });
-                }
-            }
-        );
-        setMessage("");
+        if (message) {
+            dispatch(sendMessageWS(currentChat, message));
+            setMessage("");
+        }
     };
 
     const handleCall = (callType) => {
-        const callMessage = {
-            to: currentChat._id,
-            from: currentUserData._id,
-            senderName: currentUserData.name,
-            message: "",
-            type: "Call",
-            senderSocketId: socket.id,
-            callType,
-            date: new Date(),
-        };
-        socket.emit("message:create", callMessage, (res) => {
-            if (res.error) {
-                console.log(res.error);
-            } else if (res.data) {
-                const { type, date, _id } = res.data;
-                const newmessage = {
-                    chatId: currentChat._id,
-                    messageData: [
-                        {
-                            type,
-                            message: `${currentUserData.name} invited for ${callType} call. Join using this link: - http://localhost:3000/videochat/${_id}`,
-                            party: "sender",
-                            senderName: currentUserData.name,
-                            date,
-                        },
-                    ],
-                };
-                dispatch({
-                    type: ADD_MESSAGE,
-                    payload: newmessage,
-                });
-            }
-        });
+        dispatch(sendMessageWS(currentChat, "", "Call", { callType }));
     };
 
     // manages current chat window
@@ -309,6 +231,7 @@ const Home = () => {
 
     // sets current window
     const handleAppBarClick = (e) => {
+        setCurrentChat(null);
         setCurrentWindow(e.currentTarget.name);
     };
 

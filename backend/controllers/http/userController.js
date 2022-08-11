@@ -1,6 +1,6 @@
 import expressAsyncHandler from "express-async-handler";
-import User from "../mongoose-data-models/userModel.js";
-import generateToken from "../utils/generateToken.js";
+import User from "../../mongoose-data-models/userModel.js";
+import generateToken from "../../utils/generateToken.js";
 import jwt from "jsonwebtoken";
 
 // @desc:   register user

@@ -75,3 +75,32 @@ export const fetchVideoChatData = async function (videochatId, callback) {
         return callback({ error: "Database error!" });
     }
 };
+
+export const loadMessagesHandler = async function (props, callback) {
+    try {
+        const { chatId, userId } = props;
+
+        const messages = await Message.find({
+            participants: { $all: [chatId, userId] },
+        }).populate("sender", "name");
+
+        const constructedMessages = messages.map((message) => {
+            return {
+                senderName: message.sender.name,
+                message: message.message,
+                party:
+                    userId === message.sender._id.toString()
+                        ? "sender"
+                        : "recipient",
+                type: message.type,
+                date: message.date,
+            };
+        });
+
+        callback({ constructedMessages });
+    } catch (error) {
+        console.log(`ERROR ON RETRIEVING MESSAGES`);
+        console.log(error);
+        callback({ error: "Messages couldn`t be retrieved" });
+    }
+};

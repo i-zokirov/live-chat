@@ -237,7 +237,7 @@ const ChatWindow = ({
 
             <Box
                 sx={{
-                    height: mobileScreen ? "70vh" : "74vh",
+                    height: mobileScreen ? "68vh" : "74vh",
                     bgcolor:
                         theme.palette.mode === "dark"
                             ? "#263238"

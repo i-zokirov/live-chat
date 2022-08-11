@@ -8,6 +8,6 @@ const options = {
 };
 export const localhost = "http://localhost:5000";
 
-const socket = io.connect("/", options);
+const socket = io.connect(localhost, options);
 
 export default socket;

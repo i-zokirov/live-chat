@@ -38,9 +38,11 @@ import {
     DISPATCH_NOTIFICATION,
     RESET_NOTIFICATION,
     LOAD_MESSAGES_RESET,
+    ADD_MESSAGE,
 } from "../constants/constants";
 import axios from "axios";
 import baseUrl from "../../baseUrl";
+import socket from "../../socket";
 
 export const resetNotification = () => {
     return (dispatch) => {
@@ -634,5 +636,114 @@ export const updateUser = (reqbody) => {
                 })
             );
         }
+    };
+};
+
+// ACTIONS THAT USE WEBSOCKET INSTEAD OF HTTP
+export const loadMessagesWS = (chatId) => {
+    return (dispatch, getState) => {
+        dispatch({ type: LOAD_MESSAGES_REQUEST });
+        const {
+            auth: { data: userData },
+        } = getState();
+
+        const { loadedChats } = getState();
+        if (!loadedChats.includes(chatId)) {
+            socket.emit(
+                "messages:read",
+                { chatId, userId: userData._id },
+                ({ constructedMessages, error }) => {
+                    if (error) {
+                        dispatch({
+                            type: LOAD_MESSAGES_FAILURE,
+                            payload: error,
+                        });
+
+                        dispatch(
+                            dispatchNotification({
+                                type: "error",
+                                title: "Error",
+                                message: error,
+                            })
+                        );
+                    } else if (constructedMessages) {
+                        dispatch({
+                            type: LOAD_MESSAGES_SUCCESS,
+                            payload: constructedMessages,
+                        });
+                        dispatch({
+                            type: LOADED_CHATS,
+                            payload: chatId,
+                        });
+                        dispatch({
+                            type: ADD_MESSAGE,
+                            payload: {
+                                chatId,
+                                messageData: constructedMessages,
+                            },
+                        });
+
+                        dispatch({
+                            type: LOAD_MESSAGES_RESET,
+                        });
+                    }
+                }
+            );
+        } else {
+            dispatch({
+                type: LOAD_MESSAGES_RESET,
+            });
+        }
+    };
+};
+
+export const sendMessageWS = (
+    chat,
+    message,
+    type = "Text",
+    additionalProps
+) => {
+    return (dispatch, getState) => {
+        const {
+            auth: { data: userData },
+        } = getState();
+        const props = {
+            to: chat._id,
+            from: userData._id,
+            senderName: userData.name,
+            message,
+            type,
+            senderSocketId: socket.id,
+            date: new Date(),
+            ...additionalProps,
+        };
+        socket.emit("message:create", props, ({ error, data }) => {
+            if (error) {
+                dispatch(
+                    dispatchNotification({
+                        type: "error",
+                        title: "Error",
+                        message: error,
+                    })
+                );
+            } else {
+                const newmessage = {
+                    chatId: chat._id,
+                    messageData: [
+                        {
+                            type,
+                            message: data.message,
+                            party: "sender",
+                            senderName: userData.name,
+                            date: new Date(),
+                        },
+                    ],
+                };
+                dispatch({
+                    type: ADD_MESSAGE,
+                    payload: newmessage,
+                });
+            }
+        });
     };
 };

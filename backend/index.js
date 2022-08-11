@@ -7,42 +7,27 @@ import connectDB from "./config/connectMongoDB.js";
 import { notFound, errorHandler } from "./middleware/errorHandlers.js";
 import userRoutes from "./routers/userRoutes.js";
 import messageRoutes from "./routers/messageRoutes.js";
-import {
-    handleMessage,
-    fetchVideoChatData,
-} from "./controllers/socket/messageController.js";
-// import dotenv from "dotenv";
-// dotenv.config();
+import socketConnectionManager from "./socket.js";
+
+import dotenv from "dotenv";
+dotenv.config();
 
 connectDB();
 
+// EXPRESS APP
 const app = express();
+
+// EXPRESS APP MIDDLEWARE
 app.use(express.json());
 app.use(cors());
 
+// HTTP SERVER
 const server = http.createServer(app);
 
+// SOCKET SERVER
 const io = new Server(server);
-
-global.onlineUsers = new Map();
-
-io.on("connection", (socket) => {
-    global.chatSocket = socket;
-    socket.on("add-user", (userId) => {
-        console.log(userId);
-        onlineUsers.set(userId, socket.id);
-    });
-    socket.on("message:create", handleMessage);
-    socket.on("fetch-videochatData", fetchVideoChatData);
-    socket.on("join-room", ({ videochatId: roomId, user }) => {
-        socket.join(roomId);
-        socket.to(roomId).emit("user-connected", user);
-
-        socket.on("disconnect", () => {
-            console.log("User disconnected");
-            socket.to(roomId).emit("user-disconnected", user);
-        });
-    });
+io.on("connection", function (socket) {
+    socketConnectionManager(socket, io);
 });
 
 // ROUTE HANDLERS

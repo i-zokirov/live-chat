@@ -160,10 +160,12 @@ const Register = () => {
                             as={Router}
                             to="/signin"
                             sx={
-                                theme.palette.mode === "dark" && {
-                                    color: "white",
-                                    textDecoration: "underline",
-                                }
+                                theme.palette.mode === "dark"
+                                    ? {
+                                          color: "white",
+                                          textDecoration: "underline",
+                                      }
+                                    : {}
                             }
                         >
                             Sign in here
