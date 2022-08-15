@@ -2,6 +2,7 @@ import User from "../../mongoose-data-models/userModel.js";
 
 export const addDMHandler = async function (props, callback) {
     const { userId, requestedUserId } = props;
+    const socket = this;
 
     try {
         const user = await User.findById(userId)
@@ -31,8 +32,27 @@ export const addDMHandler = async function (props, callback) {
                 dm.dms.push(user._id);
                 await dm.save();
             }
+
+            callback({ success: true });
+
+            const receiver = onlineUsers.get(requestedUserId);
+            if (receiver) socket.to(receiver).emit("DMs:updated");
         } else {
             callback({ error: "User not found!" });
+        }
+    } catch (error) {
+        callback({ error });
+    }
+};
+
+export const getDMsHandler = async function (props, callback) {
+    try {
+        const user = await User.findById(props.userId).populate(
+            "dms",
+            "name email avatar"
+        );
+        if (user) {
+            callback({ data: user.dms });
         }
     } catch (error) {
         callback({ error });

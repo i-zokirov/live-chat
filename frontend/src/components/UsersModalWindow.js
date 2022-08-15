@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addChat, getAllUsers } from "../redux/actions/actions";
+import { addChat, addChatWS, getAllUsers } from "../redux/actions/actions";
 
 import Searchbar from "./Searchbar";
 import TransitionModal from "./TransitionModal";
@@ -39,7 +39,8 @@ const UsersModalWindow = ({ open, handleClose }) => {
     }, [userslist, dispatch]);
 
     const handleAddClick = (user) => {
-        dispatch(addChat(user));
+        dispatch(addChatWS(user));
+
         handleClose();
     };
     const theme = useTheme();

@@ -747,3 +747,88 @@ export const sendMessageWS = (
         });
     };
 };
+
+export const getDMsWS = () => {
+    return (dispatch, getState) => {
+        dispatch({ type: GET_USER_CONTACTS_REQUEST });
+        const {
+            auth: { data: userData },
+        } = getState();
+        socket.emit("DMs:read", { userId: userData._id }, ({ data, error }) => {
+            if (error) {
+                dispatch({
+                    type: GET_USER_CONTACTS_FAILURE,
+                    payload: error,
+                });
+                dispatch(
+                    dispatchNotification({
+                        type: "error",
+                        title: "Error",
+                        message: error,
+                    })
+                );
+            }
+            if (data)
+                dispatch({
+                    type: GET_USER_CONTACTS_SUCCESS,
+                    payload: data,
+                });
+        });
+    };
+};
+
+export const addChatWS = (user) => {
+    return (dispatch, getState) => {
+        dispatch({ type: ADD_CHAT_REQUEST });
+        const {
+            auth: { data: currentUser },
+            archived: { archivedChats },
+            contacts: { contactlist },
+        } = getState();
+
+        const props = { userId: currentUser._id, requestedUserId: user._id };
+        socket.emit("DMs:create", props, ({ error, success }) => {
+            if (error) {
+                dispatch({ type: ADD_CHAT_FAILURE, payload: error });
+                setTimeout(() => {
+                    dispatch({ type: ADD_CHAT_RESET });
+                }, 5000);
+                dispatch(
+                    dispatchNotification({
+                        type: "error",
+                        title: "Error",
+                        message: error,
+                    })
+                );
+            } else if (success) {
+                dispatch({
+                    type: ADD_CHAT_SUCCESS,
+                    payload: user,
+                });
+
+                if (!contactlist.some((x) => x._id === user._id)) {
+                    dispatch({
+                        type: GET_USER_CONTACTS_SUCCESS,
+                        payload: [...contactlist, user],
+                    });
+                }
+
+                if (archivedChats && archivedChats.length)
+                    if (archivedChats.some((x) => x._id === user._id)) {
+                        console.log("Removing user from archive");
+                        const filtered = archivedChats.filter((x) =>
+                            x._id !== user._id ? x : ""
+                        );
+                        console.log(filtered);
+                        dispatch({
+                            type: GET_ARCHIVED_CHATS_SUCCESS,
+                            payload: filtered,
+                        });
+                    }
+                setTimeout(() => {
+                    dispatch({ type: ADD_CHAT_RESET });
+                }, 5000);
+            }
+        });
+    };
+};

@@ -32,6 +32,7 @@ import {
     getArchivedChats,
     loadMessagesWS,
     sendMessageWS,
+    getDMsWS,
 } from "../redux/actions/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -76,7 +77,7 @@ const Home = () => {
 
     useEffect(() => {
         if (!contactlist && tokenVerified) {
-            dispatch(getDMs());
+            dispatch(getDMsWS());
         }
     }, []);
 
@@ -121,6 +122,13 @@ const Home = () => {
                     },
                 });
                 localStorage.setItem("lastmessageId", data.messageId);
+            }
+        });
+
+        socket.on("DMs:updated", () => {
+        
+            if (tokenVerified) {
+                dispatch(getDMsWS());
             }
         });
     }, []);

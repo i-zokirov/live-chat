@@ -41,15 +41,7 @@ const userSchema = mongoose.Schema(
 
 // custom middleware to compare password
 userSchema.methods.matchPassword = async function (enteredPassword) {
-    console.log(enteredPassword, this.password);
-    const valid = await bcrypt.compare(enteredPassword, this.password);
-    if (valid) {
-        console.log("Valid");
-        return true;
-    } else {
-        console.log("Invalid");
-        return false;
-    }
+    return await bcrypt.compare(enteredPassword, this.password);
 };
 
 // before user record is saved, password is hashed

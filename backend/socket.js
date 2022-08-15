@@ -3,7 +3,10 @@ import {
     fetchVideoChatData,
     loadMessagesHandler,
 } from "./controllers/socket/messageController.js";
-import { addDMHandler } from "./controllers/socket/userController.js";
+import {
+    addDMHandler,
+    getDMsHandler,
+} from "./controllers/socket/userController.js";
 
 global.onlineUsers = new Map();
 const socketConnectionManager = function (socket, io) {
@@ -24,7 +27,8 @@ const socketConnectionManager = function (socket, io) {
         });
     });
 
-    socket.on("addDM", addDMHandler);
+    socket.on("DMs:create", addDMHandler);
+    socket.on("DMs:read", getDMsHandler);
 };
 
 export default socketConnectionManager;
