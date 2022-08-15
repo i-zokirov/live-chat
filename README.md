@@ -10,9 +10,19 @@ Socket.io module was used for bi-directional and low latency communication.
 
 ## Demo
 
-Live demo can be viewed with the following link: [livechat-izokirov.herokuapp.com](https://livechat-izokirov.herokuapp.com/signin)
+Live demo can be viewed with the following link: [https://livechat-izokirov.herokuapp.com](https://livechat-izokirov.herokuapp.com/signin)
 
 Feel free to register with a dummy account to test the application features.
+
+## Tech Stack
+
+**Client:** React, Redux, Material UI, Axios
+
+**Server:** Node, Express, Mongoose, Socket.io, JWT token, Bcryptjs, Cors
+
+**Database:** MongoDB
+
+**Deployment:** Heroku - [https://livechat-izokirov.herokuapp.com](https://livechat-izokirov.herokuapp.com/signin)
 
 ## Features
 
@@ -77,6 +87,86 @@ Change socket connection url to the localhost url/port on **./frontend/src/socke
 
 Finally, uncomment line 12 and 13 on **./backend/index.js** file to allow reading env variables locally.
 
+## Data models
+
+#### userSchema
+
+```js
+const userSchema = mongoose.Schema(
+    {
+        name: {
+            type: String,
+            required: true,
+        },
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+            max: 50,
+        },
+        password: {
+            type: String,
+            required: true,
+            min: 8,
+        },
+        avatar: {
+            type: String,
+            default: "",
+        },
+        dms: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
+        archives: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
+    },
+    {
+        timestamps: true,
+    }
+);
+```
+
+#### messageSchema
+
+```js
+const messageSchema = mongoose.Schema(
+    {
+        type: {
+            type: String,
+            enum: ["Text", "Image", "File", "Call"],
+            default: "Text",
+            required: true,
+        },
+        message: {
+            type: String,
+        },
+        participants: {
+            type: Array,
+            required: true,
+        },
+        sender: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
+        date: {
+            type: Date,
+            default: new Date(),
+            required: true,
+        },
+    },
+    {
+        timesamps: true,
+    }
+);
+```
+
 ## UI
 
 #### Login Page (Desktop)
@@ -135,10 +225,6 @@ Finally, uncomment line 12 and 13 on **./backend/index.js** file to allow readin
 
 <img width="450" alt="image" src="./assets/avatars_mobile_light.png" >
 
-## Deployment
+## License
 
-To deploy this project run
-
-```bash
-  npm run deploy
-```
+[MIT](https://choosealicense.com/licenses/mit/)
