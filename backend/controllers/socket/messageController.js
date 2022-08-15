@@ -29,7 +29,7 @@ export const handleMessage = async function (payload, callback) {
     }
 
     if (type === "Call") {
-        newMessage.message = `${senderName} invited for ${callType} call. Join using this link: - http://localhost:3000/videochat/${newMessage._id}`;
+        newMessage.message = `${senderName} invited for ${callType} call. Join using this link: - https://livechat-izokirov.herokuapp.com/videochat/${newMessage._id}`;
         await newMessage.save();
     }
 
@@ -42,7 +42,7 @@ export const handleMessage = async function (payload, callback) {
         socket.to(receiver).emit("message:created", {
             message:
                 newMessage.type === "Call"
-                    ? `${senderName} invited for ${callType} call. Join using this link: - http://localhost:3000/videochat/${newMessage._id}`
+                    ? `${senderName} invited for ${callType} call. Join using this link: - https://livechat-izokirov.herokuapp.com/videochat/${newMessage._id}`
                     : newMessage.message,
             senderSocketId: senderSocketId,
             messageId: newMessage._id.toString(),

@@ -14,6 +14,69 @@ Live demo can be viewed with the following link: [livechat-izokirov.herokuapp.co
 
 Feel free to register with a dummy account to test the application features.
 
+## Features
+
+-   Live & Offline bidirectional chat with socket.io
+-   MondoDB database for chat histories and user records
+-   User authentication && token status verification on each page reload
+-   All users/contacts view
+-   DM (direct message) contacts view
+-   Archived chats/contacts view
+-   Features to add user to chat, archive existing chat, and delete existing chat
+-   Light/dark mode toggle
+-   Avatar set-up
+-   User statuses
+
+## Environment Variables
+
+To run this project, you will need to add the following environment variables to your .env file
+
+`MONGODB_URI`
+
+`JWT_SECRET`
+
+## Run Locally
+
+Clone the project
+
+```bash
+  git clone https://github.com/i-zokirov/live-chat.git
+```
+
+Go to the project directory
+
+```bash
+  cd live-chat
+```
+
+Install dependencies (run npm install in root folder as well as frontend folder)
+
+```bash
+  npm install
+```
+
+Start the server
+
+```bash
+  npm run server
+```
+
+Start the frontend
+
+```bash
+  npm run frontend
+```
+
+Start the server and frontend simultenously
+
+```bash
+  npm run dev
+```
+
+Change socket connection url to the localhost url/port on **./frontend/src/socket.js** and change exported variable on **./frontend/src/baseUrl.js** file to **devUrl**.
+
+Finally, uncomment line 12 and 13 on **./backend/index.js** file to allow reading env variables locally.
+
 ## UI
 
 #### Login Page (Desktop)
@@ -71,3 +134,11 @@ Feel free to register with a dummy account to test the application features.
 #### Avatars Page (Mobile & Light)
 
 <img width="450" alt="image" src="./assets/avatars_mobile_light.png" >
+
+## Deployment
+
+To deploy this project run
+
+```bash
+  npm run deploy
+```
