@@ -16,4 +16,42 @@ Feel free to register with a dummy account to test the application features.
 
 ## UI
 
+#### Login Page (Desktop)
+
 <img width="450" alt="image" src="./assets/signin.png" >
+
+#### Registration Page (Desktop)
+
+<img width="450" alt="image" src="./assets/register.png" >
+
+#### Welcome Page (Desktop)
+
+<img width="450" alt="image" src="./assets/welcome.png" >
+
+#### Welcome Page (Desktop & Light mode)
+
+<img width="450" alt="image" src="./assets/welcome_light.png" >
+
+#### Welcome Page (Mobile)
+
+<img width="450" alt="image" src="./assets/welcome_mobile.png" >
+
+#### Welcome Page (Mobile & Light mode)
+
+<img width="450" alt="image" src="./assets/welcome_mobile_light.png" >
+
+#### Chat UI (Desktop)
+
+<img width="450" alt="image" src="./assets/chat.png" >
+
+#### Chat UI (Desktop & Light mode)
+
+<img width="450" alt="image" src="./assets/chat_light.png" >
+
+#### Chat UI (Mobile)
+
+<img width="450" alt="image" src="./assets/chat_mobile.png" >
+
+#### Chat UI (Mobile & Light mode)
+
+<img width="450" alt="image" src="./assets/chat_mobile_light.png" >
