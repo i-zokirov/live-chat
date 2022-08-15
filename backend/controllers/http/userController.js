@@ -63,7 +63,7 @@ export const authenticate = expressAsyncHandler(async (req, res) => {
 // @desc:   verify user token user
 // @route:  GET /api/users/token
 // @access: Public
-export const verifyToken = (req, res) => {
+export const verifyToken = expressAsyncHandler(async (req, res) => {
     let token;
 
     if (
@@ -73,8 +73,12 @@ export const verifyToken = (req, res) => {
         try {
             token = req.headers.authorization.split(" ")[1];
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-            res.json({ message: "Verified" });
+            const user = await User.findById(decoded.userId);
+            if (user) {
+                res.json({ message: "Verified" });
+            } else {
+                throw new Error("User not found");
+            }
         } catch (error) {
             if (error.name === "TokenExpiredError") {
                 throw error;
@@ -83,7 +87,9 @@ export const verifyToken = (req, res) => {
                 console.error("Error occured while token validation", error);
             }
             res.status(401);
-            throw new Error("Not authorized, token validation failed!");
+            throw new Error(
+                "Not authorized, token validation failed. Please sign in again!"
+            );
         }
     }
 
@@ -91,7 +97,7 @@ export const verifyToken = (req, res) => {
         res.status(401);
         throw new Error("Unauthorized!");
     }
-};
+});
 
 // @desc:   get user DMs
 // @route:  GET /api/users/:userId/dms

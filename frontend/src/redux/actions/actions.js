@@ -147,8 +147,21 @@ export const verifyToken = () => {
                     type: AUTHENTICATE_USER_SUCCESS,
                     payload: userData,
                 });
+            } else {
+                dispatch({
+                    type: AUTHENTICATE_USER_FAILURE,
+                    payload: "Not Authorized!",
+                });
+                dispatch(logoutUser());
             }
         } catch (error) {
+            dispatch({
+                type: AUTHENTICATE_USER_FAILURE,
+                payload:
+                    error.response && error.response.data.message
+                        ? error.response.data.message
+                        : error.message,
+            });
             if (error.response.data.message === "jwt expired") {
                 dispatch(logoutUser());
             }

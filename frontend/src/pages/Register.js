@@ -68,7 +68,7 @@ const Register = () => {
                 elevation={2}
                 sx={{
                     minHeight: 400,
-                    minWidth: 350,
+                    width: 350,
                     display: "flex",
                     justifyContent: "center",
                     padding: 5,

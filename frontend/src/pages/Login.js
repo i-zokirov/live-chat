@@ -14,7 +14,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Link as Router, useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import { useDispatch, useSelector } from "react-redux";
-import { authenticateUser } from "../redux/actions/actions";
+import { authenticateUser, verifyToken } from "../redux/actions/actions";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -49,7 +49,10 @@ const Login = () => {
     };
 
     useEffect(() => {
-        if (data) {
+        if (!tokenVerified) {
+            dispatch(verifyToken());
+        }
+        if (data && tokenVerified) {
             navigate(location.state ? location.state.prevPath : "/chats");
         }
     }, [data]);
@@ -70,7 +73,7 @@ const Login = () => {
                 elevation={2}
                 sx={{
                     minHeight: 400,
-                    minWidth: 350,
+                    width: 350,
                     display: "flex",
                     justifyContent: "center",
                     padding: 5,
