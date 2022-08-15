@@ -10,19 +10,19 @@ Socket.io module was used for bi-directional and low latency communication.
 
 ## Demo
 
-Live demo can be viewed with the following link: [https://livechat-izokirov.herokuapp.com](https://livechat-izokirov.herokuapp.com/signin)
+Live demo can be viewed with the following link: [https://livechat-izokirov.herokuapp.com](https://livechat-izokirov.herokuapp.com)
 
 Feel free to register with a dummy account to test the application features.
 
 ## Tech Stack
 
-**Client:** React, Redux, Material UI, Axios
+**Client:** React, Redux, Material UI, Peerjs, Axios
 
-**Server:** Node, Express, Mongoose, Socket.io, JWT token, Bcryptjs, Cors
+**Server:** Node, Express, Mongoose, Socket.io, JWT, Bcryptjs, Cors
 
 **Database:** MongoDB
 
-**Deployment:** Heroku - [https://livechat-izokirov.herokuapp.com](https://livechat-izokirov.herokuapp.com/signin)
+**Deployment:** Heroku - [https://livechat-izokirov.herokuapp.com](https://livechat-izokirov.herokuapp.com)
 
 ## Features
 
@@ -171,6 +171,7 @@ const messageSchema = mongoose.Schema(
 ## Roadmap
 
 -   Make further enhancements on video/audio chatting
+-   Build custom peerjs server
 -   Add group chat support
 -   Implement on-demand messages loading
 -   Add attachment/image support for messages
