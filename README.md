@@ -33,6 +33,7 @@ Feel free to register with a dummy account to test the application features.
 -   DM (direct message) contacts view
 -   Archived chats/contacts view
 -   Features to add user to chat, archive existing chat, and delete existing chat
+-   Video conference support with integrated chat interface (requires further enhancement)
 -   Light/dark mode toggle
 -   Avatar set-up
 -   User statuses
@@ -166,6 +167,13 @@ const messageSchema = mongoose.Schema(
     }
 );
 ```
+
+## Roadmap
+
+-   Make further enhancements on video/audio chatting
+-   Add group chat support
+-   Implement on-demand messages loading
+-   Add attachment/image support for messages
 
 ## UI
 
