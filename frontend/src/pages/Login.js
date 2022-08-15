@@ -49,7 +49,7 @@ const Login = () => {
     };
 
     useEffect(() => {
-        if (!tokenVerified) {
+        if (data && !tokenVerified) {
             dispatch(verifyToken());
         }
         if (data && tokenVerified) {
