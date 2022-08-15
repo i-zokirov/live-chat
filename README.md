@@ -55,3 +55,19 @@ Feel free to register with a dummy account to test the application features.
 #### Chat UI (Mobile & Light mode)
 
 <img width="450" alt="image" src="./assets/chat_mobile_light.png" >
+
+#### Profile sidebar UI (Mobile)
+
+<img width="450" alt="image" src="./assets/profile_mobile.png" >
+
+#### Profile sidebar UI (Mobile & Light mode)
+
+<img width="450" alt="image" src="./assets/profile_mobile_light.png" >
+
+#### Avatars Page (Mobile)
+
+<img width="450" alt="image" src="./assets/avatars-mobile.png" >
+
+#### Avatars Page (Mobile & Light)
+
+<img width="450" alt="image" src="./assets/avatars_mobile_light.png" >
