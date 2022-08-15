@@ -52,10 +52,13 @@ const Login = () => {
         if (data && !tokenVerified) {
             dispatch(verifyToken());
         }
+    }, [data]);
+
+    useEffect(() => {
         if (data && tokenVerified) {
             navigate(location.state ? location.state.prevPath : "/chats");
         }
-    }, [data]);
+    }, [tokenVerified, data]);
 
     return (
         <Box

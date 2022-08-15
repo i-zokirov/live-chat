@@ -74,7 +74,9 @@ export const verifyToken = expressAsyncHandler(async (req, res) => {
             token = req.headers.authorization.split(" ")[1];
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             const user = await User.findById(decoded.userId);
+
             if (user) {
+                console.log(`Verified token for ${user._id}`);
                 res.json({ message: "Verified" });
             } else {
                 throw new Error("User not found");
