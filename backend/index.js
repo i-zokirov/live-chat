@@ -9,8 +9,8 @@ import userRoutes from "./routers/userRoutes.js";
 import messageRoutes from "./routers/messageRoutes.js";
 import socketConnectionManager from "./socket.js";
 
-// import dotenv from "dotenv";
-// dotenv.config();
+import dotenv from "dotenv";
+dotenv.config();
 
 // MONGODB CONNECTION
 connectDB();
