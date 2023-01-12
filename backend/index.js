@@ -8,9 +8,9 @@ import { notFound, errorHandler } from "./middleware/errorHandlers.js";
 import userRoutes from "./routers/userRoutes.js";
 import messageRoutes from "./routers/messageRoutes.js";
 import socketConnectionManager from "./socket.js";
-
 import dotenv from "dotenv";
-dotenv.config();
+
+if (process.env.NODE_ENV !== "production") dotenv.config();
 
 // MONGODB CONNECTION
 connectDB();
