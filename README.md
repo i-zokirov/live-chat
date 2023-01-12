@@ -10,7 +10,7 @@ Socket.io module was used for bi-directional and low latency communication.
 
 ## Demo
 
-Live demo can be viewed with the following link: [https://livechat-izokirov.herokuapp.com](https://livechat-izokirov.herokuapp.com)
+Live demo can be viewed with the following link: [https://livechat-j3wn.onrender.com](https://livechat-j3wn.onrender.com)
 
 Feel free to register with a dummy account to test the application features.
 
@@ -22,7 +22,7 @@ Feel free to register with a dummy account to test the application features.
 
 **Database:** MongoDB
 
-**Deployment:** Heroku - [https://livechat-izokirov.herokuapp.com](https://livechat-izokirov.herokuapp.com)
+**Deployment:** Heroku - [https://livechat-j3wn.onrender.com](https://livechat-j3wn.onrender.com)
 
 ## Features
 
